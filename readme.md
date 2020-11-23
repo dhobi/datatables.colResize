@@ -2,15 +2,15 @@
 
 Plugin to resize columns by mouse drag or touch.
 
-##Demo:
+## Demo:
 http://live.datatables.net/hafazixi/3/edit?css,js,output
 
-##Installation:
+## Installation:
 javascript file: jquery.dataTables.colResize.js
 
 stylesheet to include: jquery.dataTables.colResize.css
 
-##Usage:
+## Usage:
 
 The plugin will try to initialize itself
 
@@ -25,7 +25,7 @@ table.colResize.reset(); // reset column.sWidth values
 
 
 
-##Options:
+## Options:
 ```javascript
 colResize = {
   isEnabled: true,
@@ -39,41 +39,41 @@ colResize = {
 }
  ```
 
-###isEnabled 
+### isEnabled 
 default: true
 
 Specify whether resize functionality is enabled on dataTable init
 
-###hoverClass 
+### hoverClass 
 default: 'dt-colresizable-hover'
 
 Class which will be toggled on resizable & hovered \<th\> element (right border +/- 10px)
 
-###hasBoundCheck
+### hasBoundCheck
 default: true
 
 Specify whether min-width / max-width styles are checked to keep resizing of column in bounds
 
-###minBoundClass
+### minBoundClass
 default: 'dt-colresizable-bound-min'
 
 Class which will be toggled for 500ms once the min-width of the column has been reached
 
-###maxBoundClass
+### maxBoundClass
 default: 'dt-colresizable-bound-max'
 
 Class which will be toggled for 500ms once the max-width of the column has been reached
 
-###isResizable
+### isResizable
 default: column.isResizable / true
 
 Called once during plugin/datatable init. Return false will not attach the drag events to the column.
 
-###onResizeStart
+### onResizeStart
 Callback on drag start / touchstart event. Parameter is the dataTable column which has been resized and all other columns in the table.
 
-###onResize
+### onResize
 Callback on dragging / touchmove event. Parameter is the dataTable column which is currently being resized.
 
-###onResizeEnd
+### onResizeEnd
 Callback on drag end / touchend event. Parameter is the dataTable column which has been resized and all other columns in the table.
