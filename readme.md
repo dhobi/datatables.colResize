@@ -12,12 +12,20 @@ stylesheet to include: jquery.dataTables.colResize.css
 
 ## Usage:
 
-The plugin will try to initialize itself
+The plugin will try to initialize itself on preInit.dt event.
 
 ```javascript
-var table = $('#example').DataTable();
-new $.fn.dataTable.ColResize(table);
+var options = { ...see below... };
+// Either:
+var table = $('#example').DataTable({
+  colResize: options
+});
 
+// Or:
+var table = $('#example').DataTable();
+new $.fn.dataTable.ColResize(table, options);
+
+// Available methods:
 table.colResize.enable(); // enable plugin (i.e. when options was isEnabled: false)
 table.colResize.disable(); // remove all events
 table.colResize.reset(); // reset column.sWidth values
