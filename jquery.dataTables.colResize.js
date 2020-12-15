@@ -1,7 +1,7 @@
 ﻿/**
  * @summary     ColResize
  * @description Provide the ability to resize columns in a DataTable
- * @version     1.0.0
+ * @version     1.1.0
  * @file        jquery.dataTables.colResize.js
  * @author      Daniel Hobi
  *
@@ -93,7 +93,8 @@
                 column: null,
                 minBoundAllowClass: true,
                 maxBoundAllowClass: true,
-                isLastColumnDragging: false
+                isLastColumnDragging: false,
+                maxTableWidth: 0,
             },
             opts: opts
         };
@@ -158,6 +159,15 @@
                             $scrollBody[0].scrollLeft = $scrollBody[0].scrollWidth;
                         }
                     }
+                    
+                    // do not outgrow table if not scrollable
+                    if(that.s.state.maxTableWidth > 0 && changedWidth > 0) {
+                        var currentTableWidth = that.s.state.$element.closest('table').width();
+                        if(currentTableWidth > that.s.state.maxTableWidth) {
+                            that._fnApplyWidth(changedWidth + (that.s.state.maxTableWidth - currentTableWidth));
+                            that._fnShowMaxBoundReached();
+                        }
+                    }
                 }
             });
             $(document).on('mouseup.ColResize touchend.ColResize', function() {
@@ -211,9 +221,10 @@
                         if(that._fnIsInDragArea($node, e)) {
                             that.s.state.isDragging = true;
                             that.s.state.startX = that._fnGetXCoords(e);
-                            that.s.state.originalWidth = $node.outerWidth();
-                            that.s.state.minWidth = that._fnGetWidthOfValue($node.css('min-width'));
-                            that.s.state.maxWidth = that._fnGetWidthOfValue($node.css('max-width'));
+                            that.s.state.maxTableWidth = that._fnGetBodyScroll().length > 0 ? 0 : $node.closest('table').width();
+                            that.s.state.originalWidth = that._fnGetCurrentWidth($node);
+                            that.s.state.minWidth = that._fnGetMinWidthOf($node);
+                            that.s.state.maxWidth = that._fnGetMaxWidthOf($node);
                             that.s.state.minBoundAllowClass = true;
                             that.s.state.maxBoundAllowClass = true;
                             that.s.state.$element = $node;
@@ -287,27 +298,52 @@
             $(column.nTh).outerWidth(width+'px');
             column.sWidth = width+'px';
         },
+        _fnGetCurrentWidth: function($node) {
+            var possibleWidths = $node.attr('style').split(';').map(function(cssPart) { return cssPart.trim(); })
+                .filter(function(cssPart) { return cssPart !== ''})
+                .map(function(cssPart) {
+                    var widthResult = cssPart.match(/^width: (\d+)px/i);
+                    return widthResult != null ? parseInt(widthResult[1]) : 0;
+                })
+                .filter(function(possibleWidth) { return !isNaN(possibleWidth) && possibleWidth > 0 });
+
+            if(possibleWidths.length > 0) {
+                return possibleWidths[0];
+            }
+            return $node.outerWidth();
+        },
+        _fnGetMinWidthOf: function($node) {
+            var minWidthFromCss = this._fnGetWidthOfValue($node.css('min-width'));
+            if(!isNaN(minWidthFromCss) && minWidthFromCss > 0) {
+                return minWidthFromCss;
+            }
+            
+            //try to guess
+            var $hiddenElement = $node.clone().css({ left: -10000, top: -10000, position: 'absolute', display: 'inline', visibility: 'visible', width: 'auto' }).appendTo('body');
+            var minWidth = parseInt($hiddenElement.outerWidth());
+            $hiddenElement.remove();
+            if(!$node.hasClass('sorting_disabled')) {
+                minWidth += 30; //sortable column needs a bit more space for the icon
+            }
+            return minWidth < 50 ? 50 : minWidth;
+        },
+        _fnGetMaxWidthOf: function($node) {
+            return this._fnGetWidthOfValue($node.css('max-width'));
+        },
         _fnGetWidthOfValue: function(widthStr) {
             if(widthStr === 'none') {
                 return -1;
             }
-            return parseInt(widthStr.match(/(\d)+px/ig));
+            return parseInt(widthStr.match(/(\d+)px/ig));
         },
         _fnBoundCheck: function(changedWidth) {
-            var that = this;
             var thWishWidth = this.s.state.originalWidth + changedWidth;
-            var $currentElement = null;
             
             //min bound
             if(this.s.state.minWidth !== -1 && thWishWidth < this.s.state.minWidth) {
                 var addBackToMinWidth = this.s.state.minWidth - thWishWidth;
                 changedWidth += addBackToMinWidth;
-                if(this.s.state.minBoundAllowClass) {
-                    this.s.state.$element.addClass(this.s.opts.minBoundClass);
-                    $currentElement = this.s.state.$element;
-                    setTimeout(function() { $currentElement.removeClass(that.s.opts.minBoundClass); }, 500);
-                    this.s.state.minBoundAllowClass = false;
-                }
+                this._fnShowMinBoundReached();
             } else {
                 this.s.state.minBoundAllowClass = true;
             }
@@ -316,17 +352,30 @@
             if(this.s.state.maxWidth !== -1 && thWishWidth > this.s.state.maxWidth) {
                 var substractFromMaxWidth = thWishWidth - this.s.state.maxWidth;
                 changedWidth -= substractFromMaxWidth;
-                if(this.s.state.maxBoundAllowClass) {
-                    this.s.state.$element.addClass(this.s.opts.maxBoundClass);
-                    $currentElement = this.s.state.$element;
-                    setTimeout(function() { $currentElement.removeClass(that.s.opts.maxBoundClass); }, 500);
-                    this.s.state.maxBoundAllowClass = false;
-                }
+                this._fnShowMaxBoundReached();
             } else {
                 this.s.state.maxBoundAllowClass = true;
             }
             
             return changedWidth;
+        },
+        _fnShowMinBoundReached: function() {
+            var that = this;
+            if(this.s.state.minBoundAllowClass) {
+                this.s.state.$element.addClass(this.s.opts.minBoundClass);
+                var $currentElement = this.s.state.$element;
+                setTimeout(function() { $currentElement.removeClass(that.s.opts.minBoundClass); }, 500);
+                this.s.state.minBoundAllowClass = false;
+            }
+        },
+        _fnShowMaxBoundReached: function() {
+            var that = this;
+            if(this.s.state.maxBoundAllowClass) {
+                this.s.state.$element.addClass(this.s.opts.maxBoundClass);
+                var $currentElement = this.s.state.$element;
+                setTimeout(function() { $currentElement.removeClass(that.s.opts.maxBoundClass); }, 500);
+                this.s.state.maxBoundAllowClass = false;
+            }
         },
         _fnMapColumn: function(column) {
             return { idx: column.idx, width: column.sWidth };
