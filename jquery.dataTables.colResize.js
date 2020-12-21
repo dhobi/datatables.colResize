@@ -1,7 +1,7 @@
 ﻿/**
  * @summary     ColResize
  * @description Provide the ability to resize columns in a DataTable
- * @version     1.1.0
+ * @version     1.2.0
  * @file        jquery.dataTables.colResize.js
  * @author      Daniel Hobi
  *
@@ -86,6 +86,7 @@
             state: {
                 isDragging: false,
                 startX: 0,
+                originalTableWidth: 0,
                 originalWidth: 0,
                 minWidth: 0,
                 maxWidth: 0,
@@ -222,6 +223,7 @@
                             that.s.state.isDragging = true;
                             that.s.state.startX = that._fnGetXCoords(e);
                             that.s.state.maxTableWidth = that._fnGetBodyScroll().length > 0 ? 0 : $node.closest('table').width();
+                            that.s.state.originalTableWidth = $node.closest('table').width();
                             that.s.state.originalWidth = that._fnGetCurrentWidth($node);
                             that.s.state.minWidth = that._fnGetMinWidthOf($node);
                             that.s.state.maxWidth = that._fnGetMaxWidthOf($node);
@@ -269,18 +271,23 @@
 
             //change table size
             var $table = this.s.state.$element.closest('table');
-            var shouldChangeTableWidth = changedWidth < 0 && 
-                this.s.state.$element.closest('.dataTables_scroll').length > 0 && 
+            var shouldChangeTableWidth = this.s.state.$element.closest('.dataTables_scroll').length > 0 && 
                 ($table.width() + changedWidth) > this.s.state.$element.closest('.dataTables_scroll').width();
             if(shouldChangeTableWidth) {
-                $table.width($table.width() + changedWidth - 1);
+                $table.width(that.s.state.originalTableWidth + changedWidth);
             }
-            
+
+            // possible body table
             var scrollBodyTh = this.s.state.$element.closest('.dataTables_scroll').find('.dataTables_scrollBody table th:nth-child('+(this.s.state.$element.index() + 1)+')');
             scrollBodyTh.outerWidth((thWidth)+'px');
-
             var $bodyTable = scrollBodyTh.closest('table');
             $bodyTable.width($table.width());
+
+            // possible footer table
+            var scrollFooterTh = this.s.state.$element.closest('.dataTables_scroll').find('.dataTables_scrollFoot table th:nth-child('+(this.s.state.$element.index() + 1)+')');
+            scrollFooterTh.outerWidth((thWidth)+'px');
+            var $footerTable = scrollFooterTh.closest('table');
+            $footerTable.width($table.width());
 
             // table has not shrunk, modify the width of all columns. 
             // HTML table can force columns to be wider than max-width and smaller than min-width. Overwrite style properties with !important to force it to look the same as the header
@@ -289,8 +296,12 @@
                 ($table.width() + changedWidth) < this.s.state.$element.closest('.dataTables_scroll').width()) {
                 this._fnGetAllColumns().forEach(function(column) {
                     var $hbTh = $(column.nTh);
+                    //body table
                     var $sbTh = that.s.state.$element.closest('.dataTables_scroll').find('.dataTables_scrollBody table th:nth-child('+($hbTh.index() + 1)+')');
                     $sbTh.width($hbTh.width()+" !important");
+                    //footer table
+                    var $sfTh = that.s.state.$element.closest('.dataTables_scroll').find('.dataTables_scrollFoot table th:nth-child('+($hbTh.index() + 1)+')');
+                    $sfTh.width($hbTh.width()+" !important");
                 });
             }
         },
