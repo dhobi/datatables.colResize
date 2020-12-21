@@ -279,13 +279,13 @@
 
             // possible body table
             var scrollBodyTh = this.s.state.$element.closest('.dataTables_scroll').find('.dataTables_scrollBody table th:nth-child('+(this.s.state.$element.index() + 1)+')');
-            scrollBodyTh.outerWidth((thWidth)+'px');
+            scrollBodyTh.width((thWidth)+'px');
             var $bodyTable = scrollBodyTh.closest('table');
             $bodyTable.width($table.width());
 
             // possible footer table
             var scrollFooterTh = this.s.state.$element.closest('.dataTables_scroll').find('.dataTables_scrollFoot table th:nth-child('+(this.s.state.$element.index() + 1)+')');
-            scrollFooterTh.outerWidth((thWidth)+'px');
+            scrollFooterTh.width((thWidth)+'px');
             var $footerTable = scrollFooterTh.closest('table');
             $footerTable.width($table.width());
 
@@ -306,7 +306,7 @@
             }
         },
         _fnApplyWidthColumn: function(column, width) {
-            $(column.nTh).outerWidth(width+'px');
+            $(column.nTh).width(width+'px');
             column.sWidth = width+'px';
         },
         _fnGetCurrentWidth: function($node) {
@@ -321,7 +321,7 @@
             if(possibleWidths.length > 0) {
                 return possibleWidths[0];
             }
-            return $node.outerWidth();
+            return $node.width();
         },
         _fnGetMinWidthOf: function($node) {
             var minWidthFromCss = this._fnGetWidthOfValue($node.css('min-width'));
@@ -331,7 +331,7 @@
             
             //try to guess
             var $hiddenElement = $node.clone().css({ left: -10000, top: -10000, position: 'absolute', display: 'inline', visibility: 'visible', width: 'auto' }).appendTo('body');
-            var minWidth = parseInt($hiddenElement.outerWidth());
+            var minWidth = parseInt($hiddenElement.width());
             $hiddenElement.remove();
             if(!$node.hasClass('sorting_disabled')) {
                 minWidth += 30; //sortable column needs a bit more space for the icon
