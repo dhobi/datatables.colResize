@@ -1,7 +1,7 @@
 ﻿/**
  * @summary     ColResize
  * @description Provide the ability to resize columns in a DataTable
- * @version     1.2.0
+ * @version     1.3.0
  * @file        jquery.dataTables.colResize.js
  * @author      Daniel Hobi
  *
@@ -54,7 +54,7 @@
         }
         return resultObject;
     }
-    
+
     var DataTable = $.fn.dataTable;
 
     /**
@@ -66,7 +66,7 @@
      */
     var ColResize = function(dt, opts) {
         opts = settingsFallback(opts || {}, ColResize.defaults);
-        
+
         var settings = new $.fn.dataTable.Api(dt).settings()[0];
         dt = settings;
 
@@ -103,14 +103,14 @@
         if(this.s.opts.isEnabled) {
             this._fnConstruct();
         }
-        
+
         return this;
     };
 
     $.extend(ColResize.prototype, {
         fnEnable: function() {
             if(this.isEnabled) {
-                this.s.dt.oInstance.oApi._fnLog(this.dt, 1, "ColResize attempted to enable again. Ignoring.");
+                this.s.dt.oInstance.oApi._fnLog(this.dt, 1, "ColResize: attempted to enable again. Ignoring.");
                 return;
             }
             this._fnConstruct();
@@ -124,10 +124,10 @@
         },
         fnDisable: function() {
             if(!this.isEnabled) {
-                this.s.dt.oInstance.oApi._fnLog(this.dt, 1, "ColResize attempted to disable again. Ignoring.");
+                this.s.dt.oInstance.oApi._fnLog(this.dt, 1, "ColResize: attempted to disable again. Ignoring.");
                 return;
             }
-            
+
             $(document).off('.ColResize');
             this._fnGetAllColumns().forEach(function(column) {
                 var $columnNode = $(column.nTh);
@@ -160,9 +160,9 @@
                             $scrollBody[0].scrollLeft = $scrollBody[0].scrollWidth;
                         }
                     }
-                    
+
                     // do not outgrow table if not scrollable
-                    if(that.s.state.maxTableWidth > 0 && changedWidth > 0) {
+                    if(that.s.state.maxTableWidth > 0) {
                         var currentTableWidth = that.s.state.$element.closest('table').width();
                         if(currentTableWidth > that.s.state.maxTableWidth) {
                             that._fnApplyWidth(changedWidth + (that.s.state.maxTableWidth - currentTableWidth));
@@ -189,18 +189,18 @@
                 });
                 that.s.state.isDragging = false;
             });
-            
+
             //register column events
-                        
+
             this._fnGetAllColumns().forEach(function(column) {
                 var $columnNode = $(column.nTh);
                 var isResizable = that._fnIsColumnResizable(column);
                 $columnNode.attr('data-is-resizable', isResizable.toString());
                 if(isResizable) {
-                    
+
                     //save the original value (server) somewhere
                     column._sResizableWidth = column.sWidth;
-                    
+
                     $columnNode.on('mousemove.ColResize touchmove.ColResize', function(e) {
                         var $node = $(e.currentTarget);
                         if(that._fnIsInDragArea($node, e)) {
@@ -220,6 +220,14 @@
                     $columnNode.on('mousedown.ColResize touchstart.ColResize', function(e) {
                         var $node = $(e.currentTarget);
                         if(that._fnIsInDragArea($node, e)) {
+                            
+                            //disable sorting
+                            that._fnGetAllColumns().forEach(function(column) {
+                                column._bSortableTempHolder = column.bSortable;
+                                column.bSortable = false;
+                                that._fnRemovePercentWidths(column, $(column.nTh));
+                            });
+                            
                             that.s.state.isDragging = true;
                             that.s.state.startX = that._fnGetXCoords(e);
                             that.s.state.maxTableWidth = that._fnGetBodyScroll().length > 0 ? 0 : $node.closest('table').width();
@@ -233,17 +241,12 @@
                             that.s.state.column = column;
                             that.s.state.isLastColumnDragging = that._fnIsLastResizableColumnDragging(column);
                             
-                            //disable sorting
-                            that._fnGetAllColumns().forEach(function(column) {
-                                column._bSortableTempHolder = column.bSortable;
-                                column.bSortable = false;
-                            });
                             that.s.opts.onResizeStart(null, that._fnGetAllColumns().map(that._fnMapColumn));
                         }
                     });
                 }
             });
-            
+
             this.isEnabled = true;
         },
         _fnGetAllColumns: function() {
@@ -251,6 +254,18 @@
         },
         _fnGetBodyScroll: function() {
             return $(this.s.dt.nScrollBody);
+        },
+        _fnRemovePercentWidths: function(column, $node) {
+            if($node.attr('style') && $node.attr('style').indexOf('%') !== -1) {
+                this.s.dt.oInstance.oApi._fnLog(this.dt, 1, "ColResize: column styles in percentages is not supported, trying to convert to px on the fly.");
+                var width = $node.width();
+                $node.removeAttr('style');
+                column.sWidth = width+'px';
+                column.width = width+'px';
+                $node.width(width);
+            } else {
+                $node.width($node.width());
+            }
         },
         _fnIsInDragArea: function($th, e) {
             var rightSide = $th.offset().left + $th.outerWidth();
@@ -264,14 +279,14 @@
             var that = this;
             //keep inside bounds by manipulating changedWidth if any
             changedWidth = this.s.opts.hasBoundCheck ? this._fnBoundCheck(changedWidth) : changedWidth;
-            
+
             //apply widths
             var thWidth = this.s.state.originalWidth + changedWidth;
             this._fnApplyWidthColumn(this.s.state.column, thWidth);
 
             //change table size
             var $table = this.s.state.$element.closest('table');
-            var shouldChangeTableWidth = this.s.state.$element.closest('.dataTables_scroll').length > 0 && 
+            var shouldChangeTableWidth = this.s.state.$element.closest('.dataTables_scroll').length > 0 &&
                 ($table.width() + changedWidth) > this.s.state.$element.closest('.dataTables_scroll').width();
             if(shouldChangeTableWidth) {
                 $table.width(that.s.state.originalTableWidth + changedWidth);
@@ -291,8 +306,8 @@
 
             // table has not shrunk, modify the width of all columns. 
             // HTML table can force columns to be wider than max-width and smaller than min-width. Overwrite style properties with !important to force it to look the same as the header
-            if(changedWidth < 0 && 
-                this.s.state.$element.closest('.dataTables_scroll').length > 0 && 
+            if(changedWidth < 0 &&
+                this.s.state.$element.closest('.dataTables_scroll').length > 0 &&
                 ($table.width() + changedWidth) < this.s.state.$element.closest('.dataTables_scroll').width()) {
                 this._fnGetAllColumns().forEach(function(column) {
                     var $hbTh = $(column.nTh);
@@ -311,12 +326,12 @@
         },
         _fnGetCurrentWidth: function($node) {
             var possibleWidths = $node.attr('style').split(';').map(function(cssPart) { return cssPart.trim(); })
-                .filter(function(cssPart) { return cssPart !== ''})
+                .filter(function(cssPart) { return cssPart !== ''; })
                 .map(function(cssPart) {
                     var widthResult = cssPart.match(/^width: (\d+)px/i);
                     return widthResult != null ? parseInt(widthResult[1]) : 0;
                 })
-                .filter(function(possibleWidth) { return !isNaN(possibleWidth) && possibleWidth > 0 });
+                .filter(function(possibleWidth) { return !isNaN(possibleWidth) && possibleWidth > 0; });
 
             if(possibleWidths.length > 0) {
                 return possibleWidths[0];
@@ -328,15 +343,25 @@
             if(!isNaN(minWidthFromCss) && minWidthFromCss > 0) {
                 return minWidthFromCss;
             }
-            
+
             //try to guess
-            var $hiddenElement = $node.clone().css({ left: -10000, top: -10000, position: 'absolute', display: 'inline', visibility: 'visible', width: 'auto' }).appendTo('body');
+            var $hiddenElement = $node.clone().css({ 
+                left: -10000, 
+                top: -10000, 
+                position: 'absolute', 
+                display: 'inline', 
+                visibility: 'visible', 
+                width: 'auto', 
+                fontFamily: $node.css('font-family'), 
+                fontSize: $node.css('font-size'),
+                padding: $node.css('padding')
+            }).appendTo('body');
             var minWidth = parseInt($hiddenElement.width());
             $hiddenElement.remove();
             if(!$node.hasClass('sorting_disabled')) {
-                minWidth += 30; //sortable column needs a bit more space for the icon
+                minWidth += 20; //sortable column needs a bit more space for the icon
             }
-            return minWidth < 50 ? 50 : minWidth;
+            return minWidth < 30 ? 30 : minWidth;
         },
         _fnGetMaxWidthOf: function($node) {
             return this._fnGetWidthOfValue($node.css('max-width'));
@@ -349,7 +374,7 @@
         },
         _fnBoundCheck: function(changedWidth) {
             var thWishWidth = this.s.state.originalWidth + changedWidth;
-            
+
             //min bound
             if(this.s.state.minWidth !== -1 && thWishWidth < this.s.state.minWidth) {
                 var addBackToMinWidth = this.s.state.minWidth - thWishWidth;
@@ -358,7 +383,7 @@
             } else {
                 this.s.state.minBoundAllowClass = true;
             }
-            
+
             //max bound
             if(this.s.state.maxWidth !== -1 && thWishWidth > this.s.state.maxWidth) {
                 var substractFromMaxWidth = thWishWidth - this.s.state.maxWidth;
@@ -367,7 +392,7 @@
             } else {
                 this.s.state.maxBoundAllowClass = true;
             }
-            
+
             return changedWidth;
         },
         _fnShowMinBoundReached: function() {
@@ -436,7 +461,7 @@
         onResize: function(column) {},
         onResizeEnd: function(column, columns) {}
     };
-    
+
     /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 	 * Constants
 	 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
@@ -472,7 +497,7 @@
                     new ColResize(settings, opts);
                 }
                 else {
-                    table.oApi._fnLog(settings, 1, "ColResize attempted to initialise twice. Ignoring second");
+                    table.oApi._fnLog(settings, 1, "ColResize: attempted to initialise twice. Ignoring second");
                 }
 
                 return null; /* No node for DataTables to insert */
