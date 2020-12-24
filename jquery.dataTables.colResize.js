@@ -1,7 +1,7 @@
 ﻿/**
  * @summary     ColResize
  * @description Provide the ability to resize columns in a DataTable
- * @version     1.3.0
+ * @version     1.4.0
  * @file        jquery.dataTables.colResize.js
  * @author      Daniel Hobi
  *
@@ -294,13 +294,13 @@
 
             // possible body table
             var scrollBodyTh = this.s.state.$element.closest('.dataTables_scroll').find('.dataTables_scrollBody table th:nth-child('+(this.s.state.$element.index() + 1)+')');
-            scrollBodyTh.width((thWidth)+'px');
+            scrollBodyTh.outerWidth((thWidth)+'px');
             var $bodyTable = scrollBodyTh.closest('table');
             $bodyTable.width($table.width());
 
             // possible footer table
             var scrollFooterTh = this.s.state.$element.closest('.dataTables_scroll').find('.dataTables_scrollFoot table th:nth-child('+(this.s.state.$element.index() + 1)+')');
-            scrollFooterTh.width((thWidth)+'px');
+            scrollFooterTh.outerWidth((thWidth)+'px');
             var $footerTable = scrollFooterTh.closest('table');
             $footerTable.width($table.width());
 
@@ -313,15 +313,15 @@
                     var $hbTh = $(column.nTh);
                     //body table
                     var $sbTh = that.s.state.$element.closest('.dataTables_scroll').find('.dataTables_scrollBody table th:nth-child('+($hbTh.index() + 1)+')');
-                    $sbTh.width($hbTh.width()+" !important");
+                    $sbTh.outerWidth($hbTh.width()+" !important");
                     //footer table
                     var $sfTh = that.s.state.$element.closest('.dataTables_scroll').find('.dataTables_scrollFoot table th:nth-child('+($hbTh.index() + 1)+')');
-                    $sfTh.width($hbTh.width()+" !important");
+                    $sfTh.outerWidth($hbTh.width()+" !important");
                 });
             }
         },
         _fnApplyWidthColumn: function(column, width) {
-            $(column.nTh).width(width+'px');
+            $(column.nTh).outerWidth(width+'px');
             column.sWidth = width+'px';
         },
         _fnGetCurrentWidth: function($node) {
@@ -472,7 +472,7 @@
      *  @type      String
      *  @default   As code
      */
-    ColResize.version = "1.0.0";
+    ColResize.version = "1.4.0";
 
     /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 	 * DataTables interfaces
