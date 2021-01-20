@@ -1,7 +1,7 @@
 ﻿/**
  * @summary     ColResize
  * @description Provide the ability to resize columns in a DataTable
- * @version     1.4.0
+ * @version     1.5.0
  * @file        jquery.dataTables.colResize.js
  * @author      Daniel Hobi
  *
@@ -303,20 +303,21 @@
             scrollFooterTh.outerWidth((thWidth)+'px');
             var $footerTable = scrollFooterTh.closest('table');
             $footerTable.width($table.width());
-
-            // table has not shrunk, modify the width of all columns. 
-            // HTML table can force columns to be wider than max-width and smaller than min-width. Overwrite style properties with !important to force it to look the same as the header
-            if(changedWidth < 0 &&
-                this.s.state.$element.closest('.dataTables_scroll').length > 0 &&
-                ($table.width() + changedWidth) < this.s.state.$element.closest('.dataTables_scroll').width()) {
+            
+            // HTML table can force columns to be wider than max-width and smaller than min-width. Overwrite style properties to look the same as the header
+            if(this.s.state.$element.closest('.dataTables_scroll').length > 0) { 
+                var additionalStylesForHiddenThRows = ';padding-top: 0px;padding-bottom: 0px;border-top-width: 0px;border-bottom-width: 0px;height: 0px;';
                 this._fnGetAllColumns().forEach(function(column) {
                     var $hbTh = $(column.nTh);
+                    var currentIndex = $hbTh.index();
+                    var currentStyles = $hbTh.attr('style') + additionalStylesForHiddenThRows;
+
                     //body table
-                    var $sbTh = that.s.state.$element.closest('.dataTables_scroll').find('.dataTables_scrollBody table th:nth-child('+($hbTh.index() + 1)+')');
-                    $sbTh.outerWidth($hbTh.width()+" !important");
+                    var $sbTh = that.s.state.$element.closest('.dataTables_scroll').find('.dataTables_scrollBody table th:nth-child('+(currentIndex + 1)+')');
+                    $sbTh.attr('style', currentStyles);
                     //footer table
-                    var $sfTh = that.s.state.$element.closest('.dataTables_scroll').find('.dataTables_scrollFoot table th:nth-child('+($hbTh.index() + 1)+')');
-                    $sfTh.outerWidth($hbTh.width()+" !important");
+                    var $sfTh = that.s.state.$element.closest('.dataTables_scroll').find('.dataTables_scrollFoot table th:nth-child('+(currentIndex + 1)+')');
+                    $sfTh.attr('style', currentStyles);
                 });
             }
         },
