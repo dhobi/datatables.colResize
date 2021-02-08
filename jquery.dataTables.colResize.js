@@ -1,9 +1,9 @@
 ﻿/**
  * @summary     ColResize
  * @description Provide the ability to resize columns in a DataTable
- * @version     1.5.0
+ * @version     1.6.0
  * @file        jquery.dataTables.colResize.js
- * @author      Daniel Hobi
+ * @author      Daniel Hobi, Lado Tadic
  *
  * Language:    Javascript
  * License:     MIT
@@ -339,7 +339,10 @@
             }
             return $node.width();
         },
-        _fnGetMinWidthOf: function($node) {
+        _fnGetMinWidthOf: function ($node) {
+            if(this.s.opts.getMinWidthOf != null) {
+                return this.s.opts.getMinWidthOf($node);
+            }
             var minWidthFromCss = this._fnGetWidthOfValue($node.css('min-width'));
             if(!isNaN(minWidthFromCss) && minWidthFromCss > 0) {
                 return minWidthFromCss;
@@ -460,7 +463,8 @@
         },
         onResizeStart: function(column, columns) {},
         onResize: function(column) {},
-        onResizeEnd: function(column, columns) {}
+        onResizeEnd: function (column, columns) { },
+        getMinWidthOf: null
     };
 
     /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *

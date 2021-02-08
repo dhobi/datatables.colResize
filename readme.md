@@ -29,7 +29,7 @@ new $.fn.dataTable.ColResize(table, options);
 table.colResize.enable(); // enable plugin (i.e. when options was isEnabled: false)
 table.colResize.disable(); // remove all events
 table.colResize.reset(); // reset column.sWidth values
- ```
+```
 
 
 
@@ -43,9 +43,10 @@ colResize = {
   maxBoundClass: 'dt-colresizable-bound-max',
   isResizable: function(column) { return true; },
   onResize: function(column) {},
-  onResizeEnd: function(column, columns) {}
+  onResizeEnd: function(column, columns) {},
+  getMinWidthOf: function($thNode) {}
 }
- ```
+```
 
 ### isEnabled 
 default: true
@@ -85,3 +86,13 @@ Callback on dragging / touchmove event. Parameter is the dataTable column which 
 
 ### onResizeEnd
 Callback on drag end / touchend event. Parameter is the dataTable column which has been resized and all other columns in the table.
+
+### getMinWidhtOf
+default: null
+
+If defined (not null) will be used to calculate the minimal width of the given jQuery th - node. 
+
+If null (default) the plugin tries to detect the minimal width by 
+1. Looking at the CSS min-width property
+2. Guessing the width by checking the space the text label uses
+3. Minimum 30px width
