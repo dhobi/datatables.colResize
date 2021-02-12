@@ -1,10 +1,9 @@
 ﻿/**
  * @summary     ColResize
  * @description Provide the ability to resize columns in a DataTable
- * @version     1.6.0
+ * @version     1.6.1
  * @file        jquery.dataTables.colResize.js
- * @author      Daniel Hobi, Lado Tadic
- *
+ * @author      Daniel Hobi, Lado Tadic, Daniel Petras
  * Language:    Javascript
  * License:     MIT
  */
@@ -272,7 +271,7 @@
             var xCoord = this._fnGetXCoords(e);
             return (rightSide + 10) > xCoord && (rightSide - 10) < xCoord;
         },
-        _fnGetXCoords(e) {
+        _fnGetXCoords: function(e) {
             return e.type.indexOf('touch') !== -1 ? e.originalEvent.touches[0].pageX : e.pageX;
         },
         _fnApplyWidth: function(changedWidth) {
@@ -477,7 +476,7 @@
      *  @type      String
      *  @default   As code
      */
-    ColResize.version = "1.4.0";
+    ColResize.version = "1.6.1";
 
     /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 	 * DataTables interfaces
