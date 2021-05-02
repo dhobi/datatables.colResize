@@ -87,7 +87,7 @@ Callback on dragging / touchmove event. Parameter is the dataTable column which 
 ### onResizeEnd
 Callback on drag end / touchend event. Parameter is the dataTable column which has been resized and all other columns in the table.
 
-### getMinWidhtOf
+### getMinWidthOf
 default: null
 
 If defined (not null) will be used to calculate the minimal width of the given jQuery th - node. 
