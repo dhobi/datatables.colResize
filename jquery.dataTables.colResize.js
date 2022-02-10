@@ -155,8 +155,7 @@
         fnSaveState: function () {
             let sizeMap = [];
             this._fnGetAllColumns().forEach(function (column) {
-                let widthResult = column.sWidth.match(/(\d+)/i),
-                    oldWidth = widthResult != null ? parseInt(widthResult[0]) : 0;
+                let oldWidth = column.nTh.offsetWidth;
                 sizeMap[column.idx] = oldWidth;
             });
             localStorage.setItem(this.s.opts.stateStorageName, JSON.stringify(sizeMap));
