@@ -42,6 +42,7 @@ colResize = {
   minBoundClass: 'dt-colresizable-bound-min',
   maxBoundClass: 'dt-colresizable-bound-max',
   isResizable: function(column) { return true; },
+  onResizeStart: function(column, columns) {},
   onResize: function(column) {},
   onResizeEnd: function(column, columns) {},
   getMinWidthOf: function($thNode) {}
