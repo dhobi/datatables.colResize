@@ -15,25 +15,26 @@
 	
 	<script>
 		$(document).ready(function () {
-			$('#example').DataTable({
-				scrollX: true,
-				colResize: {
-				  isEnabled: true,
-				  hoverClass: 'dt-colresizable-hover',
-				  hasBoundCheck: true,
-				  minBoundClass: 'dt-colresizable-bound-min',
-				  maxBoundClass: 'dt-colresizable-bound-max',
-				  isResizable: function(column) { 
-					return column.idx !== 2; 
-				  },
-				  onResize: function(column) {
-					//console.log('...resizing...');
-				  },
-				  onResizeEnd: function(column, columns) {
-					console.log('I have been resized!');
-				  }
-			  }
+			var oTable = $('#example').DataTable({
+                scrollX: true,
+                colResize: {
+                    isEnabled: true,
+                    hoverClass: 'dt-colresizable-hover',
+                    hasBoundCheck: true,
+                    minBoundClass: 'dt-colresizable-bound-min',
+                    maxBoundClass: 'dt-colresizable-bound-max',
+                    isResizable: function (column) {
+                        return column.idx !== 2;
+                    },
+                    onResize: function (column) {
+                        //console.log('...resizing...');
+                    },
+                    onResizeEnd: function (column, columns) {
+                        console.log('I have been resized!');
+                    }
+                }
 			});
+            window.otable = oTable;
 		});
 	</script>
 </head>

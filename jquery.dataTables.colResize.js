@@ -86,7 +86,7 @@
                 isDragging: false,
                 startX: 0,
                 originalTableWidth: 0,
-                originalWidth: 0,
+                originalWidth: [],
                 minWidth: 0,
                 maxWidth: 0,
                 $element: null,
@@ -115,9 +115,18 @@
             this._fnConstruct();
         },
         fnReset: function() {
+            let self = this;
             this._fnGetAllColumns().forEach(function(column) {
+                let widthResult = column.sWidth.match(/(\d+)/i),
+                    oldWidth = widthResult != null ? parseInt(widthResult[0]) : 0,
+                    newWidthResult = column._sResizableWidth.match(/(\d+)/i),
+                    newWidth = newWidthResult != null ? parseInt(newWidthResult[0]) : 0,
+                    $node = $(column.nTh);
+
+                self.s.state.originalWidth[$node.index()] = oldWidth;
                 column.width = column._sResizableWidth;
                 column.sWidth = column._sResizableWidth;
+                self._fnApplyWidth(newWidth - oldWidth, $node, column);
             });
             this.s.opts.onResizeEnd(null, this._fnGetAllColumns().map(this._fnMapColumn));
         },
@@ -195,11 +204,9 @@
                 let $columnNode = $(column.nTh);
                 let isResizable = self._fnIsColumnResizable(column);
                 $columnNode.attr('data-is-resizable', isResizable.toString());
+                //save the original value (server) somewhere, we want the size of all of them.
+                column._sResizableWidth = column.sWidth;
                 if (isResizable) {
-
-                    //save the original value (server) somewhere
-                    column._sResizableWidth = column.sWidth;
-
                     $columnNode.on('mousemove.ColResize touchmove.ColResize', function (e) {
                         let $node = $(e.currentTarget);
                         if (self._fnIsInDragArea($node, e)) {
@@ -219,7 +226,6 @@
                     $columnNode.on('mousedown.ColResize touchstart.ColResize', function(e) {
                         let $node = $(e.currentTarget);
                         if (self._fnIsInDragArea($node, e)) {
-
                             //disable sorting
                             self._fnGetAllColumns().forEach(function (column) {
                                 column._bSortableTempHolder = column.bSortable;
@@ -231,7 +237,7 @@
                             self.s.state.startX = self._fnGetXCoords(e);
                             self.s.state.maxTableWidth = self._fnGetBodyScroll().length > 0 ? 0 : $node.closest('table').width();
                             self.s.state.originalTableWidth = $node.closest('table').width();
-                            self.s.state.originalWidth = self._fnGetCurrentWidth($node);
+                            self.s.state.originalWidth[$node.index()] = self._fnGetCurrentWidth($node);
                             self.s.state.minWidth = self._fnGetMinWidthOf($node);
                             self.s.state.maxWidth = self._fnGetMaxWidthOf($node);
                             self.s.state.minBoundAllowClass = true;
@@ -277,10 +283,10 @@
         _fnApplyWidth: function (changedWidth, element, column) {
             let self = this;
             //keep inside bounds by manipulating changedWidth if any
-            changedWidth = this.s.opts.hasBoundCheck ? this._fnBoundCheck(changedWidth) : changedWidth;
+            changedWidth = this.s.opts.hasBoundCheck ? this._fnBoundCheck(changedWidth, element) : changedWidth;
 
             //apply widths
-            let thWidth = this.s.state.originalWidth + changedWidth;
+            let thWidth = this.s.state.originalWidth[element.index()] + changedWidth;
             this._fnApplyWidthColumn(column, thWidth);
 
             //change table size
@@ -372,20 +378,20 @@
             }
             return minWidth < 30 ? 30 : minWidth;
         },
-        _fnGetMaxWidthOf: function($node) {
+        _fnGetMaxWidthOf: function ($node) {
             return this._fnGetWidthOfValue($node.css('max-width'));
         },
-        _fnGetWidthOfValue: function(widthStr) {
-            if(widthStr === 'none') {
+        _fnGetWidthOfValue: function (widthStr) {
+            if (widthStr === 'none') {
                 return -1;
             }
             return parseInt(widthStr.match(/(\d+)px/ig));
         },
-        _fnBoundCheck: function(changedWidth) {
-            let thWishWidth = this.s.state.originalWidth + changedWidth;
+        _fnBoundCheck: function (changedWidth, element) {
+            let thWishWidth = (typeof this.s.state.originalWidth[element.index()] != 'undefined' ? this.s.state.originalWidth[element.index] : this._fnGetCurrentWidth(element)) + changedWidth;
 
             //min bound
-            if(this.s.state.minWidth !== -1 && thWishWidth < this.s.state.minWidth) {
+            if (this.s.state.minWidth !== -1 && thWishWidth < this.s.state.minWidth) {
                 let addBackToMinWidth = this.s.state.minWidth - thWishWidth;
                 changedWidth += addBackToMinWidth;
                 this._fnShowMinBoundReached();
