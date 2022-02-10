@@ -133,6 +133,7 @@
         fnRestoreState: function () {
             let self = this,
                 sizeMapData = localStorage.getItem(this.s.opts.stateStorageName);
+            if (sizeMapData == null) return;
             let sizeMap = JSON.parse(sizeMapData);
 
             self.s.state.maxTableWidth = self._fnGetBodyScroll().length > 0 ? 0 : this._fnGetTable().width();
@@ -222,6 +223,9 @@
                     // callback
                     let mappedColumns = self._fnGetAllColumns().map(self._fnMapColumn);
                     self.s.opts.onResizeEnd(self._fnMapColumn(self.s.state.column), mappedColumns);
+                    if (self.s.opts.saveState) {
+                        self.fnSaveState();
+                    }
                 }
                 self._fnGetAllColumns().forEach(function (column) {
                     $(column.nTh).removeClass(self.s.opts.hoverClass);
@@ -282,8 +286,10 @@
                     });
                 }
             });
-
             this.isEnabled = true;
+            if (this.s.opts.saveState) {
+                this.fnRestoreState();
+            }
         },
         _fnGetAllColumns: function () {
             return this.s.dt.aoColumns;
@@ -506,6 +512,7 @@
         hasBoundCheck: true,
         minBoundClass: 'dt-colresizable-bound-min',
         maxBoundClass: 'dt-colresizable-bound-max',
+        saveState: false,
         stateStorageName: window.location.pathname + "/colResizeStateData",
         isResizable: function (column) {
             if (typeof column.isResizable === 'undefined') {
