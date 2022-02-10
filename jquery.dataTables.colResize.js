@@ -132,7 +132,7 @@
         },
         fnRestoreState: function () {
             let self = this,
-                sizeMapData = localStorage.getItem(this.s.opts.stateStorageName);
+                sizeMapData = this.s.opts.stateLoadCallback(this.s.opts);
             if (sizeMapData == null) return;
             let sizeMap = JSON.parse(sizeMapData);
 
@@ -158,7 +158,7 @@
                 let oldWidth = column.nTh.offsetWidth;
                 sizeMap[column.idx] = oldWidth;
             });
-            localStorage.setItem(this.s.opts.stateStorageName, JSON.stringify(sizeMap));
+            this.s.opts.stateSaveCallback(this.s.opts, sizeMap);
         },
         fnDisable: function () {
             if (!this.isEnabled) {
@@ -523,6 +523,13 @@
         onResize: function (column) {
         },
         onResizeEnd: function (column, columns) {
+        },
+        stateSaveCallback: function (settings, data) {
+            localStorage.setItem(settings.stateStorageName, JSON.stringify(data));
+        },
+        stateLoadCallback: function (settings) {
+            let data = localStorage.getItem(settings.stateStorageName);
+            if (data) return data;
         },
         getMinWidthOf: null
     };
