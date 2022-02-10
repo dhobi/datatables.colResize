@@ -148,7 +148,6 @@
                 self.s.state.originalWidth[$node.index()] = oldWidth;
                 column.width = newWidth + 'px';
                 column.sWidth = newWidth + 'px';
-                console.log(newWidth, oldWidth, $node, column)
                 self._fnApplyWidth(newWidth - oldWidth, $node, column);
             });
             this.s.opts.onResizeEnd(null, this._fnGetAllColumns().map(this._fnMapColumn));
