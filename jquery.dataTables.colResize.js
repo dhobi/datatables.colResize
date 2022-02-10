@@ -132,9 +132,8 @@
         },
         fnRestoreState: function () {
             let self = this,
-                sizeMapData = this.s.opts.stateLoadCallback(this.s.opts);
-            if (sizeMapData == null) return;
-            let sizeMap = JSON.parse(sizeMapData);
+                sizeMap = this.s.opts.stateLoadCallback(this.s.opts);
+            if (sizeMap == null) return;
 
             self.s.state.maxTableWidth = self._fnGetBodyScroll().length > 0 ? 0 : this._fnGetTable().width();
             self.s.state.originalTableWidth = this._fnGetTable().width();
@@ -529,7 +528,7 @@
         },
         stateLoadCallback: function (settings) {
             let data = localStorage.getItem(settings.stateStorageName);
-            if (data) return data;
+            return data != null ? JSON.parse(data) : null;
         },
         getMinWidthOf: null
     };
