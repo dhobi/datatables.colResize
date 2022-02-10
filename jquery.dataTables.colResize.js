@@ -148,7 +148,7 @@
             $(document).on('mousemove.ColResize touchmove.ColResize', function(e) {
                 if (self.s.state.isDragging) {
                     let changedWidth = self._fnGetXCoords(e) - self.s.state.startX;
-                    self._fnApplyWidth(changedWidth);
+                    self._fnApplyWidth(changedWidth, self.s.state.$element, self.s.state.column);
 
                     self.s.opts.onResize(self._fnMapColumn(self.s.state.column));
 
@@ -164,7 +164,7 @@
                     if (self.s.state.maxTableWidth > 0) {
                         let currentTableWidth = self.s.state.$element.closest('table').width();
                         if (currentTableWidth > self.s.state.maxTableWidth) {
-                            self._fnApplyWidth(changedWidth + (self.s.state.maxTableWidth - currentTableWidth));
+                            self._fnApplyWidth(changedWidth + (self.s.state.maxTableWidth - currentTableWidth, self.s.state.$element, self.s.state.column));
                             self._fnShowMaxBoundReached();
                         }
                     }
@@ -274,48 +274,48 @@
         _fnGetXCoords: function(e) {
             return e.type.indexOf('touch') !== -1 ? e.originalEvent.touches[0].pageX : e.pageX;
         },
-        _fnApplyWidth: function(changedWidth) {
+        _fnApplyWidth: function (changedWidth, element, column) {
             let self = this;
             //keep inside bounds by manipulating changedWidth if any
             changedWidth = this.s.opts.hasBoundCheck ? this._fnBoundCheck(changedWidth) : changedWidth;
 
             //apply widths
             let thWidth = this.s.state.originalWidth + changedWidth;
-            this._fnApplyWidthColumn(this.s.state.column, thWidth);
+            this._fnApplyWidthColumn(column, thWidth);
 
             //change table size
-            let $table = this.s.state.$element.closest('table');
-            let shouldChangeTableWidth = this.s.state.$element.closest('.dataTables_scroll').length > 0 &&
-                ($table.width() + changedWidth) > this.s.state.$element.closest('.dataTables_scroll').width();
+            let $table = element.closest('table');
+            let shouldChangeTableWidth = element.closest('.dataTables_scroll').length > 0 &&
+                ($table.width() + changedWidth) > element.closest('.dataTables_scroll').width();
             if (shouldChangeTableWidth) {
                 $table.width(self.s.state.originalTableWidth + changedWidth);
             }
 
             // possible body table
-            let scrollBodyTh = this.s.state.$element.closest('.dataTables_scroll').find('.dataTables_scrollBody table th:nth-child(' + (this.s.state.$element.index() + 1) + ')');
+            let scrollBodyTh = element.closest('.dataTables_scroll').find('.dataTables_scrollBody table th:nth-child(' + (element.index() + 1) + ')');
             scrollBodyTh.outerWidth((thWidth) + 'px');
             let $bodyTable = scrollBodyTh.closest('table');
             $bodyTable.width($table.width());
 
             // possible footer table
-            let scrollFooterTh = this.s.state.$element.closest('.dataTables_scroll').find('.dataTables_scrollFoot table th:nth-child(' + (this.s.state.$element.index() + 1) + ')');
+            let scrollFooterTh = element.closest('.dataTables_scroll').find('.dataTables_scrollFoot table th:nth-child(' + (element.index() + 1) + ')');
             scrollFooterTh.outerWidth((thWidth)+'px');
             let $footerTable = scrollFooterTh.closest('table');
             $footerTable.width($table.width());
             
             // HTML table can force columns to be wider than max-width and smaller than min-width. Overwrite style properties to look the same as the header
-            if(this.s.state.$element.closest('.dataTables_scroll').length > 0) {
+            if (element.closest('.dataTables_scroll').length > 0) {
                 let additionalStylesForHiddenThRows = ';padding-top: 0px;padding-bottom: 0px;border-top-width: 0px;border-bottom-width: 0px;height: 0px;';
-                this._fnGetAllColumns().forEach(function(column) {
+                this._fnGetAllColumns().forEach(function (column) {
                     let $hbTh = $(column.nTh);
                     let currentIndex = $hbTh.index();
                     let currentStyles = $hbTh.attr('style') + additionalStylesForHiddenThRows;
 
                     //body table
-                    let $sbTh = self.s.state.$element.closest('.dataTables_scroll').find('.dataTables_scrollBody table th:nth-child(' + (currentIndex + 1) + ')');
+                    let $sbTh = element.closest('.dataTables_scroll').find('.dataTables_scrollBody table th:nth-child(' + (currentIndex + 1) + ')');
                     $sbTh.attr('style', currentStyles);
                     //footer table
-                    let $sfTh = self.s.state.$element.closest('.dataTables_scroll').find('.dataTables_scrollFoot table th:nth-child(' + (currentIndex + 1) + ')');
+                    let $sfTh = element.closest('.dataTables_scroll').find('.dataTables_scrollFoot table th:nth-child(' + (currentIndex + 1) + ')');
                     $sfTh.attr('style', currentStyles);
                 });
             }
