@@ -132,13 +132,19 @@
         },
         fnRestoreState: function () {
             let self = this,
-                sizeMap = this.s.opts.stateLoadCallback(this.s.opts);
+                sizeMap = this.s.opts.stateLoadCallback(this.s.opts),
+                cols = this._fnGetAllColumns();
             if (sizeMap == null) return;
+
+            if (sizeMap.length !== cols.length) {
+                this.s.dt.oInstance.oApi._fnLog(this.dt, 1, "ColResize: Array size doesn't match number of columns.");
+                return;
+            }
 
             self.s.state.maxTableWidth = self._fnGetBodyScroll().length > 0 ? 0 : this._fnGetTable().width();
             self.s.state.originalTableWidth = this._fnGetTable().width();
 
-            this._fnGetAllColumns().forEach(function (column) {
+            cols.forEach(function (column) {
                 let widthResult = column.sWidth.match(/(\d+)/i),
                     oldWidth = widthResult != null ? parseInt(widthResult[0]) : 0,
                     newWidth = sizeMap[column.idx],
