@@ -15,7 +15,7 @@
 	
 	<script>
 		$(document).ready(function () {
-			var oTable = $('#example').DataTable({
+			$('#example').DataTable({
                 scrollX: true,
                 colResize: {
                     isEnabled: true,
@@ -32,10 +32,18 @@
                     },
                     onResizeEnd: function (column, columns) {
                         console.log('I have been resized!');
+                    },
+                    stateSaveCallback: function (settings, data) {
+                        let stateStorageName = window.location.pathname + "/colResizeStateData";
+                        localStorage.setItem(stateStorageName, JSON.stringify(data));
+                    },
+                    stateLoadCallback: function (settings) {
+                        let stateStorageName = window.location.pathname + "/colResizeStateData",
+                            data = localStorage.getItem(stateStorageName);
+                        return data != null ? JSON.parse(data) : null;
                     }
                 }
 			});
-            window.otable = oTable;
 		});
 	</script>
 </head>

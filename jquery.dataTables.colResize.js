@@ -510,7 +510,6 @@
         minBoundClass: 'dt-colresizable-bound-min',
         maxBoundClass: 'dt-colresizable-bound-max',
         saveState: false,
-        stateStorageName: window.location.pathname + "/colResizeStateData",
         isResizable: function (column) {
             if (typeof column.isResizable === 'undefined') {
                 return true;
@@ -524,10 +523,12 @@
         onResizeEnd: function (column, columns) {
         },
         stateSaveCallback: function (settings, data) {
-            localStorage.setItem(settings.stateStorageName, JSON.stringify(data));
+            let stateStorageName = window.location.pathname + "/colResizeStateData";
+            localStorage.setItem(stateStorageName, JSON.stringify(data));
         },
         stateLoadCallback: function (settings) {
-            let data = localStorage.getItem(settings.stateStorageName);
+            let stateStorageName = window.location.pathname + "/colResizeStateData",
+                data = localStorage.getItem(stateStorageName);
             return data != null ? JSON.parse(data) : null;
         },
         getMinWidthOf: null
@@ -543,7 +544,7 @@
      *  @type      String
      *  @default   As code
      */
-    ColResize.version = "1.6.1";
+    ColResize.version = "1.7.0";
 
     /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 	 * DataTables interfaces

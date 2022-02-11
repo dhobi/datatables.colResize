@@ -18,7 +18,7 @@ The plugin will try to initialize itself on preInit.dt event.
 var options = { ...see below... };
 // Either:
 var table = $('#example').DataTable({
-  colResize: options
+    colResize: options
 });
 
 // Or:
@@ -26,9 +26,11 @@ var table = $('#example').DataTable();
 new $.fn.dataTable.ColResize(table, options);
 
 // Available methods:
-table.colResize.enable(); // enable plugin (i.e. when options was isEnabled: false)
+table.colResize.enable();  // enable plugin (i.e. when options was isEnabled: false)
 table.colResize.disable(); // remove all events
-table.colResize.reset(); // reset column.sWidth values
+table.colResize.reset();   // reset column.sWidth values
+table.colResize.save();    // save the current state (defaults to localstorage)
+table.colResize.restore(); // restore the state from storage (defaults to localstorage)
 ```
 
 
@@ -36,30 +38,50 @@ table.colResize.reset(); // reset column.sWidth values
 ## Options:
 ```javascript
 colResize = {
-  isEnabled: true,
-  hoverClass: 'dt-colresizable-hover',
-  hasBoundCheck: true,
-  minBoundClass: 'dt-colresizable-bound-min',
-  maxBoundClass: 'dt-colresizable-bound-max',
-  isResizable: function(column) { return true; },
-  onResizeStart: function(column, columns) {},
-  onResize: function(column) {},
-  onResizeEnd: function(column, columns) {},
-  getMinWidthOf: function($thNode) {}
+    isEnabled: true,
+    saveState: false,
+    hoverClass: 'dt-colresizable-hover',
+    hasBoundCheck: true,
+    minBoundClass: 'dt-colresizable-bound-min',
+    maxBoundClass: 'dt-colresizable-bound-max',
+    isResizable: function (column) {
+        return true;
+    },
+    onResizeStart: function (column, columns) {
+    },
+    onResize: function (column) {
+    },
+    onResizeEnd: function (column, columns) {
+    },
+    getMinWidthOf: function ($thNode) {
+    },
+    stateSaveCallback: function (settings, data) {
+    },
+    stateLoadCallback: function (settings) {
+    }
 }
 ```
 
-### isEnabled 
+### isEnabled
+
 default: true
 
 Specify whether resize functionality is enabled on dataTable init
 
-### hoverClass 
+### saveState
+
+default false
+
+Specify whether state should automatically save when changed and restore on page load
+
+### hoverClass
+
 default: 'dt-colresizable-hover'
 
 Class which will be toggled on resizable & hovered \<th\> element (right border +/- 10px)
 
 ### hasBoundCheck
+
 default: true
 
 Specify whether min-width / max-width styles are checked to keep resizing of column in bounds
@@ -89,11 +111,29 @@ Callback on dragging / touchmove event. Parameter is the dataTable column which 
 Callback on drag end / touchend event. Parameter is the dataTable column which has been resized and all other columns in the table.
 
 ### getMinWidthOf
+
 default: null
 
-If defined (not null) will be used to calculate the minimal width of the given jQuery th - node. 
+If defined (not null) will be used to calculate the minimal width of the given jQuery th - node.
 
-If null (default) the plugin tries to detect the minimal width by 
+If null (default) the plugin tries to detect the minimal width by
+
 1. Looking at the CSS min-width property
 2. Guessing the width by checking the space the text label uses
 3. Minimum 30px width
+
+### stateSaveCallback
+
+default: uses localStorage
+
+Callback when state needs to save. Parameter is an array of column sizes.
+
+example: [437,412,416,258,397,357]
+
+### stateLoadCallback
+
+default: uses localStorage
+
+Callback when state needs to be restored. You will need to return an array of column sizes.
+
+example: [437,412,416,258,397,357]
