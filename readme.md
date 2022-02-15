@@ -6,9 +6,20 @@ Plugin to resize columns by mouse drag or touch.
 https://dhobi.github.io/datatables.colResize/
 
 ## Installation:
-javascript file: jquery.dataTables.colResize.js
 
-stylesheet to include: jquery.dataTables.colResize.css
+**As npm package:**
+
+```
+npm i datatables.net-colresize-unofficial
+```
+
+**Manually**:
+
+Javascript file to include: 
+[jquery.dataTables.colResize.js](jquery.dataTables.colResize.js)
+
+Stylesheet to include: 
+[jquery.dataTables.colResize.css](jquery.dataTables.colResize.css)
 
 ## Usage:
 
