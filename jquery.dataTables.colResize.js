@@ -431,7 +431,7 @@
             return parseInt(widthStr.match(/(\d+)px/ig));
         },
         _fnBoundCheck: function (changedWidth, element) {
-            let thWishWidth = (typeof this.s.state.originalWidth[element.index()] != 'undefined' ? this.s.state.originalWidth[element.index] : this._fnGetCurrentWidth(element)) + changedWidth;
+            let thWishWidth = (typeof this.s.state.originalWidth[element.index()] != 'undefined' ? this.s.state.originalWidth[element.index()] : this._fnGetCurrentWidth(element)) + changedWidth;
 
             //min bound
             if (this.s.state.minWidth !== -1 && thWishWidth < this.s.state.minWidth) {
