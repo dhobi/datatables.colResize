@@ -1,6 +1,6 @@
 {
   "name": "datatables.net-colresize-unofficial",
-  "version": "1.7.0",
+  "version": "1.7.1",
   "description": "Plugin to resize columns by mouse drag or touch.",
   "main": "./jquery.dataTables.colResize.js",
   "types": "./types.d.ts",
