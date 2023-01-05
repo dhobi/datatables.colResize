@@ -21,6 +21,15 @@ Javascript file to include:
 Stylesheet to include: 
 [jquery.dataTables.colResize.css](jquery.dataTables.colResize.css)
 
+**With CDN links:**
+
+```
+https://cdn.jsdelivr.net/npm/datatables.net-colresize-unofficial@latest/jquery.dataTables.colResize.css
+```
+```
+https://cdn.jsdelivr.net/npm/datatables.net-colresize-unofficial@latest/jquery.dataTables.colResize.js
+```
+
 ## Usage:
 
 The plugin will try to initialize itself on preInit.dt event.
