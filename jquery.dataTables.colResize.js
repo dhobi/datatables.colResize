@@ -65,7 +65,6 @@
      */
     let ColResize = function (dt, opts) {
         opts = settingsFallback(opts || {}, ColResize.defaults);
-
         let settings = new $.fn.dataTable.Api(dt).settings()[0];
         dt = settings;
 
@@ -149,10 +148,11 @@
             self.s.state.originalTableWidth = this._fnGetTable().width();
 
             cols.forEach(function (column) {
-		if (column.sWidth == null) {
+               
+		        if (column.sWidth == null) {
                     return;
                 }
-		
+	
                 let widthResult = column.sWidth.match(/(\d+)/i),
                     oldWidth = widthResult != null ? parseInt(widthResult[0]) : 0,
                     newWidth = sizeMap[column.idx],
@@ -278,7 +278,6 @@
                                 column.bSortable = false;
                                 self._fnRemovePercentWidths(column, $(column.nTh));
                             });
-
                             self.s.state.isDragging = true;
                             self.s.state.startX = self._fnGetXCoords(e);
                             self.s.state.maxTableWidth = self._fnGetBodyScroll().length > 0 ? 0 : $node.closest('table').width();
@@ -293,6 +292,7 @@
                             self.s.state.isLastColumnDragging = self._fnIsLastResizableColumnDragging(column);
 
                             self.s.opts.onResizeStart(null, self._fnGetAllColumns().map(self._fnMapColumn));
+                            
                         }
                     });
                 }
@@ -335,7 +335,6 @@
             let self = this;
             //keep inside bounds by manipulating changedWidth if any
             changedWidth = this.s.opts.hasBoundCheck ? this._fnBoundCheck(changedWidth, element) : changedWidth;
-
             //apply widths
             let thWidth = this.s.state.originalWidth[element.index()] + changedWidth;
             this._fnApplyWidthColumn(column, thWidth);
@@ -378,7 +377,9 @@
             }
         },
         _fnApplyWidthColumn: function(column, width) {
-            $(column.nTh).outerWidth(width+'px');
+            this.s.dt.aoHeader.forEach(function(el) {
+              $($(el)[column.idx].cell).outerWidth(width+'px')
+            })
             column.sWidth = width+'px';
         },
         _fnGetCurrentWidth: function($node) {
@@ -410,7 +411,6 @@
                 return minWidthFromCss;
             }
 
-            //try to guess
             let $hiddenElement = $node.clone().css({
                 left: -10000,
                 top: -10000,
@@ -420,13 +420,34 @@
                 width: 'auto',
                 fontFamily: $node.css('font-family'),
                 fontSize: $node.css('font-size'),
-                padding: $node.css('padding')
+                padding: $node.css('padding'),
+                'border-left':  $node.css('border-left'),
+                'border-right':  $node.css('border-right')
             }).appendTo('body');
-            let minWidth = parseInt($hiddenElement.width());
+
+            let minWidth = parseFloat($hiddenElement.outerWidth());
             $hiddenElement.remove();
+
             if(!$node.hasClass('sorting_disabled')) {
-                minWidth += 20; //sortable column needs a bit more space for the icon
+                let additionalWith = 20;
+                let computedStylesAfterTH = window.getComputedStyle($node.get(0), ":after")
+                let computedStylesBeforeTH = window.getComputedStyle($node.get(0), ":before")
+
+                let afterElementWidth = (computedStylesAfterTH["display"] != "none" && computedStylesAfterTH["width"] != "auto") ? 
+                                            parseFloat(computedStylesAfterTH["width"], 10) + parseFloat(computedStylesAfterTH["marginLeft"], 10) + parseFloat(computedStylesAfterTH["marginRight"], 10) :
+                                            0;
+                let beforeElementWidth = ((computedStylesBeforeTH["display"] != "none") && (computedStylesBeforeTH["width"] != "auto")) ? 
+                                            parseFloat(computedStylesBeforeTH["width"], 10) + parseFloat(computedStylesBeforeTH["marginLeft"], 10) + parseFloat(computedStylesBeforeTH["marginRight"], 10) :
+                                            0;                         
+
+                if(computedStylesAfterTH["float"] != "none" && computedStylesBeforeTH["float"] != "none")
+                    additionalWith = afterElementWidth + beforeElementWidth
+                else
+                    additionalWith = Math.max(afterElementWidth, beforeElementWidth)
+                
+                minWidth += additionalWith; //sortable column needs a bit more space for the icon
             }
+
             return minWidth < 30 ? 30 : minWidth;
         },
         _fnGetMaxWidthOf: function ($node) {
@@ -602,13 +623,11 @@
         if (e.namespace !== 'dt') {
             return;
         }
-
         let init = settings.oInit.colResize;
         let defaults = DataTable.defaults.colResize;
 
         if (init || defaults) {
             let opts = $.extend({}, init, defaults);
-
             if (init !== false) {
                 new ColResize(settings, opts);
             }
