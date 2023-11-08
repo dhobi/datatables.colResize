@@ -1,4 +1,4 @@
-﻿/**
+/**
  * @summary     ColResize
  * @description Provide the ability to resize columns in a DataTable
  * @version     1.6.1
@@ -99,7 +99,7 @@
             opts: opts
         };
         this.s.dt._colResize = this;
-        if(this.s.opts.isEnabled) {
+        if (this.s.opts.isEnabled) {
             this._fnConstruct();
         }
 
@@ -107,21 +107,21 @@
     };
 
     $.extend(ColResize.prototype, {
-        fnEnable: function() {
-            if(this.isEnabled) {
+        fnEnable: function () {
+            if (this.isEnabled) {
                 this.s.dt.oInstance.oApi._fnLog(this.dt, 1, "ColResize: attempted to enable again. Ignoring.");
                 return;
             }
             this._fnConstruct();
         },
-        fnReset: function() {
+        fnReset: function () {
             let self = this;
-            this._fnGetAllColumns().forEach(function(column) {
+            this._fnGetAllColumns().forEach(function (column) {
                 if (column.sWidth == null) {
                     return;
                 }
-                
-		let widthResult = column.sWidth.match(/(\d+)/i),
+
+                let widthResult = column.sWidth.match(/(\d+)/i),
                     oldWidth = widthResult != null ? parseInt(widthResult[0]) : 0,
                     newWidthResult = column._sResizableWidth.match(/(\d+)/i),
                     newWidth = newWidthResult != null ? parseInt(newWidthResult[0]) : 0,
@@ -149,10 +149,10 @@
             self.s.state.originalTableWidth = this._fnGetTable().width();
 
             cols.forEach(function (column) {
-		if (column.sWidth == null) {
+                if (column.sWidth == null) {
                     return;
                 }
-		
+
                 let widthResult = column.sWidth.match(/(\d+)/i),
                     oldWidth = widthResult != null ? parseInt(widthResult[0]) : 0,
                     newWidth = sizeMap[column.idx],
@@ -197,7 +197,7 @@
             let self = this;
 
             // register document events
-            $(document).on('mousemove.ColResize touchmove.ColResize', function(e) {
+            $(document).on('mousemove.ColResize touchmove.ColResize', function (e) {
                 if (self.s.state.isDragging) {
                     let changedWidth = self._fnGetXCoords(e) - self.s.state.startX;
                     self._fnApplyWidth(changedWidth, self.s.state.$element, self.s.state.column);
@@ -222,7 +222,7 @@
                     }
                 }
             });
-            $(document).on('mouseup.ColResize touchend.ColResize', function() {
+            $(document).on('mouseup.ColResize touchend.ColResize', function () {
                 if (self.s.state.isDragging) {
                     // workaround to prevent sorting on column click
                     setTimeout(function () {
@@ -246,7 +246,7 @@
 
             //register column events
 
-            this._fnGetAllColumns().forEach(function(column) {
+            this._fnGetAllColumns().forEach(function (column) {
                 let $columnNode = $(column.nTh);
                 let isResizable = self._fnIsColumnResizable(column);
                 $columnNode.attr('data-is-resizable', isResizable.toString());
@@ -263,13 +263,13 @@
                             }
                         }
                     });
-                    $columnNode.on('mouseout.ColResize', function(e) {
+                    $columnNode.on('mouseout.ColResize', function (e) {
                         if (!self.s.state.isDragging) {
                             let $node = $(e.currentTarget);
                             $node.removeClass(self.s.opts.hoverClass);
                         }
                     });
-                    $columnNode.on('mousedown.ColResize touchstart.ColResize', function(e) {
+                    $columnNode.on('mousedown.ColResize touchstart.ColResize', function (e) {
                         let $node = $(e.currentTarget);
                         if (self._fnIsInDragArea($node, e)) {
                             //disable sorting
@@ -323,12 +323,12 @@
                 $node.width($node.width());
             }
         },
-        _fnIsInDragArea: function($th, e) {
+        _fnIsInDragArea: function ($th, e) {
             let rightSide = $th.offset().left + $th.outerWidth();
             let xCoord = this._fnGetXCoords(e);
             return (rightSide + 10) > xCoord && (rightSide - 10) < xCoord;
         },
-        _fnGetXCoords: function(e) {
+        _fnGetXCoords: function (e) {
             return e.type.indexOf('touch') !== -1 ? e.originalEvent.touches[0].pageX : e.pageX;
         },
         _fnApplyWidth: function (changedWidth, element, column) {
@@ -356,10 +356,10 @@
 
             // possible footer table
             let scrollFooterTh = element.closest('.dataTables_scroll').find('.dataTables_scrollFoot table th:nth-child(' + (element.index() + 1) + ')');
-            scrollFooterTh.outerWidth((thWidth)+'px');
+            scrollFooterTh.outerWidth((thWidth) + 'px');
             let $footerTable = scrollFooterTh.closest('table');
             $footerTable.width($table.width());
-            
+
             // HTML table can force columns to be wider than max-width and smaller than min-width. Overwrite style properties to look the same as the header
             if (element.closest('.dataTables_scroll').length > 0) {
                 let additionalStylesForHiddenThRows = ';padding-top: 0px;padding-bottom: 0px;border-top-width: 0px;border-bottom-width: 0px;height: 0px;';
@@ -377,11 +377,11 @@
                 });
             }
         },
-        _fnApplyWidthColumn: function(column, width) {
-            $(column.nTh).outerWidth(width+'px');
-            column.sWidth = width+'px';
+        _fnApplyWidthColumn: function (column, width) {
+            $(column.nTh).outerWidth(width + 'px');
+            column.sWidth = width + 'px';
         },
-        _fnGetCurrentWidth: function($node) {
+        _fnGetCurrentWidth: function ($node) {
             let possibleWidths = $node.attr('style').split(';').map(function (cssPart) {
                 return cssPart.trim();
             })
@@ -396,17 +396,17 @@
                     return !isNaN(possibleWidth) && possibleWidth > 0;
                 });
 
-            if(possibleWidths.length > 0) {
+            if (possibleWidths.length > 0) {
                 return possibleWidths[0];
             }
             return $node.width();
         },
         _fnGetMinWidthOf: function ($node) {
-            if(this.s.opts.getMinWidthOf != null) {
+            if (this.s.opts.getMinWidthOf != null) {
                 return this.s.opts.getMinWidthOf($node);
             }
             let minWidthFromCss = this._fnGetWidthOfValue($node.css('min-width'));
-            if(!isNaN(minWidthFromCss) && minWidthFromCss > 0) {
+            if (!isNaN(minWidthFromCss) && minWidthFromCss > 0) {
                 return minWidthFromCss;
             }
 
@@ -424,7 +424,7 @@
             }).appendTo('body');
             let minWidth = parseInt($hiddenElement.width());
             $hiddenElement.remove();
-            if(!$node.hasClass('sorting_disabled')) {
+            if (!$node.hasClass('sorting_disabled')) {
                 minWidth += 20; //sortable column needs a bit more space for the icon
             }
             return minWidth < 30 ? 30 : minWidth;
@@ -451,7 +451,7 @@
             }
 
             //max bound
-            if(this.s.state.maxWidth !== -1 && thWishWidth > this.s.state.maxWidth) {
+            if (this.s.state.maxWidth !== -1 && thWishWidth > this.s.state.maxWidth) {
                 let substractFromMaxWidth = thWishWidth - this.s.state.maxWidth;
                 changedWidth -= substractFromMaxWidth;
                 this._fnShowMaxBoundReached();
@@ -461,9 +461,9 @@
 
             return changedWidth;
         },
-        _fnShowMinBoundReached: function() {
+        _fnShowMinBoundReached: function () {
             let self = this;
-            if(this.s.state.minBoundAllowClass) {
+            if (this.s.state.minBoundAllowClass && this.s.state.$element) {
                 this.s.state.$element.addClass(this.s.opts.minBoundClass);
                 let $currentElement = this.s.state.$element;
                 setTimeout(function () {
@@ -472,9 +472,10 @@
                 this.s.state.minBoundAllowClass = false;
             }
         },
-        _fnShowMaxBoundReached: function() {
+
+        _fnShowMaxBoundReached: function () {
             let self = this;
-            if(this.s.state.maxBoundAllowClass) {
+            if (this.s.state.maxBoundAllowClass && this.s.state.$element) {
                 this.s.state.$element.addClass(this.s.opts.maxBoundClass);
                 let $currentElement = this.s.state.$element;
                 setTimeout(function () {
@@ -483,10 +484,11 @@
                 this.s.state.maxBoundAllowClass = false;
             }
         },
-        _fnMapColumn: function(column) {
+
+        _fnMapColumn: function (column) {
             return { idx: column.idx, width: column.sWidth };
         },
-        _fnIsLastResizableColumnDragging: function(draggingColumn) {
+        _fnIsLastResizableColumnDragging: function (draggingColumn) {
             let visibleColumns = this._fnGetAllColumns().filter(function (column) {
                 return $(column.nTh).is(':visible');
             });
@@ -502,14 +504,14 @@
             }
             return true;
         },
-        _fnIsColumnResizable: function(column) {
+        _fnIsColumnResizable: function (column) {
             return this.s.opts.isResizable(column);
         }
     });
 
     /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-	 * Static parameters
-	 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+     * Static parameters
+     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 
     /**
@@ -549,8 +551,8 @@
     };
 
     /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-	 * Constants
-	 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+     * Constants
+     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
     /**
      * ColResize version
@@ -561,8 +563,8 @@
     ColResize.version = "1.7.0";
 
     /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-	 * DataTables interfaces
-	 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+     * DataTables interfaces
+     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
     // Expose
     $.fn.dataTable.ColResize = ColResize;
