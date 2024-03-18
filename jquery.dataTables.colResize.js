@@ -79,7 +79,7 @@
             camelToHungarian(ColResize.defaults, opts || {});
         }
         this.s = {
-            dt: dt,
+            dt,
             state: {
                 isDragging: false,
                 startX: 0,
@@ -94,7 +94,7 @@
                 isLastColumnDragging: false,
                 maxTableWidth: 0,
             },
-            opts: opts
+            opts,
         };
         this.s.dt._colResize = this;
         if (this.s.opts.isEnabled) {
@@ -576,7 +576,7 @@
         typeof $.fn.dataTableExt.fnVersionCheck == "function" &&
         $.fn.dataTableExt.fnVersionCheck('1.10.8')) {
         $.fn.dataTableExt.aoFeatures.push({
-            "fnInit": function (settings) {
+            fnInit: function (settings) {
                 let table = settings.oInstance;
 
                 if (!settings._colResize) {
@@ -589,7 +589,7 @@
 
                 return null; /* No node for DataTables to insert */
             },
-            "sFeature": "ColResize"
+            sFeature: "ColResize",
         });
     } else {
         alert("Warning: ColResize requires DataTables 1.10.8 or greater - www.datatables.net/download");
