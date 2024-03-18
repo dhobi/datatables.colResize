@@ -13,8 +13,7 @@
         define(['jquery', 'datatables.net'], function ($) {
             return factory($, window, document);
         });
-    }
-    else if (typeof exports === 'object') {
+    } else if (typeof exports === 'object') {
         // CommonJS
         module.exports = function (root, $) {
             if (!root) {
@@ -27,8 +26,7 @@
 
             return factory($, root, root.document);
         };
-    }
-    else {
+    } else {
         // Browser
         factory(jQuery, window, document);
     }
@@ -583,8 +581,7 @@
                     let init = settings.oInit.colResize;
                     let opts = $.extend({}, init, DataTable.defaults.colResize);
                     new ColResize(settings, opts);
-                }
-                else {
+                } else {
                     table.oApi._fnLog(settings, 1, "ColResize: attempted to initialise twice. Ignoring second");
                 }
 
@@ -592,8 +589,7 @@
             },
             "sFeature": "ColResize"
         });
-    }
-    else {
+    } else {
         alert("Warning: ColResize requires DataTables 1.10.8 or greater - www.datatables.net/download");
     }
 
