@@ -204,7 +204,7 @@
 
                     self.s.opts.onResize(self._fnMapColumn(self.s.state.column));
 
-                    //scroll if the last element gets resized
+                    // scroll if the last element gets resized
                     if (self.s.state.isLastColumnDragging) {
                         let $scrollBody = self._fnGetBodyScroll();
                         if ($scrollBody.length > 0) {
@@ -226,7 +226,7 @@
                 if (self.s.state.isDragging) {
                     // workaround to prevent sorting on column click
                     setTimeout(function () {
-                        //disable sorting
+                        // disable sorting
                         self._fnGetAllColumns().forEach(function (column) {
                             column.bSortable = column._bSortableTempHolder;
                         });
@@ -244,13 +244,13 @@
                 self.s.state.isDragging = false;
             });
 
-            //register column events
+            // register column events
 
             this._fnGetAllColumns().forEach(function (column) {
                 let $columnNode = $(column.nTh);
                 let isResizable = self._fnIsColumnResizable(column);
                 $columnNode.attr('data-is-resizable', isResizable.toString());
-                //save the original value (server) somewhere, we want the size of all of them.
+                // save the original value (server) somewhere, we want the size of all of them.
                 column._sResizableWidth = column.sWidth;
                 if (isResizable) {
                     $columnNode.on('mousemove.ColResize touchmove.ColResize', function (e) {
@@ -272,7 +272,7 @@
                     $columnNode.on('mousedown.ColResize touchstart.ColResize', function (e) {
                         let $node = $(e.currentTarget);
                         if (self._fnIsInDragArea($node, e)) {
-                            //disable sorting
+                            // disable sorting
                             self._fnGetAllColumns().forEach(function (column) {
                                 column._bSortableTempHolder = column.bSortable;
                                 column.bSortable = false;
@@ -333,14 +333,14 @@
         },
         _fnApplyWidth: function (changedWidth, element, column) {
             let self = this;
-            //keep inside bounds by manipulating changedWidth if any
+            // keep inside bounds by manipulating changedWidth if any
             changedWidth = this.s.opts.hasBoundCheck ? this._fnBoundCheck(changedWidth, element) : changedWidth;
 
-            //apply widths
+            // apply widths
             let thWidth = this.s.state.originalWidth[element.index()] + changedWidth;
             this._fnApplyWidthColumn(column, thWidth);
 
-            //change table size
+            // change table size
             let $table = element.closest('table');
             let shouldChangeTableWidth = element.closest('.dataTables_scroll').length > 0 &&
                 ($table.width() + changedWidth) > element.closest('.dataTables_scroll').width();
@@ -368,10 +368,10 @@
                     let currentIndex = $hbTh.index();
                     let currentStyles = $hbTh.attr('style') + additionalStylesForHiddenThRows;
 
-                    //body table
+                    // body table
                     let $sbTh = element.closest('.dataTables_scroll').find('.dataTables_scrollBody table th:nth-child(' + (currentIndex + 1) + ')');
                     $sbTh.attr('style', currentStyles);
-                    //footer table
+                    // footer table
                     let $sfTh = element.closest('.dataTables_scroll').find('.dataTables_scrollFoot table th:nth-child(' + (currentIndex + 1) + ')');
                     $sfTh.attr('style', currentStyles);
                 });
@@ -410,7 +410,7 @@
                 return minWidthFromCss;
             }
 
-            //try to guess
+            // try to guess
             let $hiddenElement = $node.clone().css({
                 left: -10000,
                 top: -10000,
@@ -425,7 +425,7 @@
             let minWidth = parseInt($hiddenElement.width());
             $hiddenElement.remove();
             if (!$node.hasClass('sorting_disabled')) {
-                minWidth += 20; //sortable column needs a bit more space for the icon
+                minWidth += 20; // sortable column needs a bit more space for the icon
             }
             return minWidth < 30 ? 30 : minWidth;
         },
@@ -441,7 +441,7 @@
         _fnBoundCheck: function (changedWidth, element) {
             let thWishWidth = (typeof this.s.state.originalWidth[element.index()] != 'undefined' ? this.s.state.originalWidth[element.index()] : this._fnGetCurrentWidth(element)) + changedWidth;
 
-            //min bound
+            // min bound
             if (this.s.state.minWidth !== -1 && thWishWidth < this.s.state.minWidth) {
                 let addBackToMinWidth = this.s.state.minWidth - thWishWidth;
                 changedWidth += addBackToMinWidth;
@@ -450,7 +450,7 @@
                 this.s.state.minBoundAllowClass = true;
             }
 
-            //max bound
+            // max bound
             if (this.s.state.maxWidth !== -1 && thWishWidth > this.s.state.maxWidth) {
                 let substractFromMaxWidth = thWishWidth - this.s.state.maxWidth;
                 changedWidth -= substractFromMaxWidth;
