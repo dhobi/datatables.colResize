@@ -119,11 +119,11 @@
                     return;
                 }
 
-                let widthResult = column.sWidth.match(/(\d+)/i),
-                    oldWidth = widthResult != null ? parseInt(widthResult[0]) : 0,
-                    newWidthResult = column._sResizableWidth.match(/(\d+)/i),
-                    newWidth = newWidthResult != null ? parseInt(newWidthResult[0]) : 0,
-                    $node = $(column.nTh);
+                let widthResult = column.sWidth.match(/(\d+)/i);
+                let oldWidth = widthResult != null ? parseInt(widthResult[0]) : 0;
+                let newWidthResult = column._sResizableWidth.match(/(\d+)/i);
+                let newWidth = newWidthResult != null ? parseInt(newWidthResult[0]) : 0;
+                let $node = $(column.nTh);
 
                 self.s.state.originalWidth[$node.index()] = oldWidth;
                 column.width = column._sResizableWidth;
@@ -133,10 +133,12 @@
             this.s.opts.onResizeEnd(null, this._fnGetAllColumns().map(this._fnMapColumn));
         },
         fnRestoreState: function () {
-            let self = this,
-                sizeMap = this.s.opts.stateLoadCallback(this.s.opts),
-                cols = this._fnGetAllColumns();
-            if (sizeMap == null) return;
+            let self = this;
+            let sizeMap = this.s.opts.stateLoadCallback(this.s.opts);
+            let cols = this._fnGetAllColumns();
+            if (sizeMap == null) {
+                return;
+            }
 
             if (sizeMap.length !== cols.length) {
                 this.s.dt.oInstance.oApi._fnLog(this.dt, 1, "ColResize: Array size doesn't match number of columns.");
@@ -151,10 +153,10 @@
                     return;
                 }
 
-                let widthResult = column.sWidth.match(/(\d+)/i),
-                    oldWidth = widthResult != null ? parseInt(widthResult[0]) : 0,
-                    newWidth = sizeMap[column.idx],
-                    $node = $(column.nTh);
+                let widthResult = column.sWidth.match(/(\d+)/i);
+                let oldWidth = widthResult != null ? parseInt(widthResult[0]) : 0;
+                let newWidth = sizeMap[column.idx];
+                let $node = $(column.nTh);
 
                 self.s.state.originalWidth[$node.index()] = oldWidth;
                 column.width = newWidth + 'px';
@@ -541,8 +543,8 @@
             localStorage.setItem(stateStorageName, JSON.stringify(data));
         },
         stateLoadCallback: function (settings) {
-            let stateStorageName = window.location.pathname + "/colResizeStateData",
-                data = localStorage.getItem(stateStorageName);
+            let stateStorageName = window.location.pathname + "/colResizeStateData";
+            let data = localStorage.getItem(stateStorageName);
             return data != null ? JSON.parse(data) : null;
         },
         getMinWidthOf: null
