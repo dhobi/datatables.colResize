@@ -107,7 +107,7 @@
     $.extend(ColResize.prototype, {
         fnEnable: function () {
             if (this.isEnabled) {
-                this.s.dt.oInstance.oApi._fnLog(this.dt, 1, "ColResize: attempted to enable again. Ignoring.");
+                this.s.dt.oInstance.oApi._fnLog(this.dt, 1, 'ColResize: attempted to enable again. Ignoring.');
                 return;
             }
             this._fnConstruct();
@@ -141,7 +141,7 @@
             }
 
             if (sizeMap.length !== cols.length) {
-                this.s.dt.oInstance.oApi._fnLog(this.dt, 1, "ColResize: Array size doesn't match number of columns.");
+                this.s.dt.oInstance.oApi._fnLog(this.dt, 1, 'ColResize: Array size doesn\'t match number of columns.');
                 return;
             }
 
@@ -174,7 +174,7 @@
         },
         fnDisable: function () {
             if (!this.isEnabled) {
-                this.s.dt.oInstance.oApi._fnLog(this.dt, 1, "ColResize: attempted to disable again. Ignoring.");
+                this.s.dt.oInstance.oApi._fnLog(this.dt, 1, 'ColResize: attempted to disable again. Ignoring.');
                 return;
             }
 
@@ -312,7 +312,7 @@
         },
         _fnRemovePercentWidths: function (column, $node) {
             if ($node.attr('style') && $node.attr('style').indexOf('%') !== -1) {
-                this.s.dt.oInstance.oApi._fnLog(this.dt, 1, "ColResize: column styles in percentages is not supported, trying to convert to px on the fly.");
+                this.s.dt.oInstance.oApi._fnLog(this.dt, 1, 'ColResize: column styles in percentages is not supported, trying to convert to px on the fly.');
                 let width = $node.width();
                 $node.removeAttr('style');
                 column.sWidth = width + 'px';
@@ -538,11 +538,11 @@
         onResizeEnd: function (column, columns) {
         },
         stateSaveCallback: function (settings, data) {
-            let stateStorageName = window.location.pathname + "/colResizeStateData";
+            let stateStorageName = window.location.pathname + '/colResizeStateData';
             localStorage.setItem(stateStorageName, JSON.stringify(data));
         },
         stateLoadCallback: function (settings) {
-            let stateStorageName = window.location.pathname + "/colResizeStateData";
+            let stateStorageName = window.location.pathname + '/colResizeStateData';
             let data = localStorage.getItem(stateStorageName);
             return data != null ? JSON.parse(data) : null;
         },
@@ -559,7 +559,7 @@
      *  @type      String
      *  @default   As code
      */
-    ColResize.version = "1.7.0";
+    ColResize.version = '1.7.0';
 
     /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
      * DataTables interfaces
@@ -571,8 +571,8 @@
 
 
     // Register a new feature with DataTables
-    if (typeof $.fn.dataTable === "function" &&
-        typeof $.fn.dataTableExt.fnVersionCheck === "function" &&
+    if (typeof $.fn.dataTable === 'function' &&
+        typeof $.fn.dataTableExt.fnVersionCheck === 'function' &&
         $.fn.dataTableExt.fnVersionCheck('1.10.8')) {
         $.fn.dataTableExt.aoFeatures.push({
             fnInit: function (settings) {
@@ -583,15 +583,15 @@
                     let opts = $.extend({}, init, DataTable.defaults.colResize);
                     new ColResize(settings, opts);
                 } else {
-                    table.oApi._fnLog(settings, 1, "ColResize: attempted to initialise twice. Ignoring second");
+                    table.oApi._fnLog(settings, 1, 'ColResize: attempted to initialise twice. Ignoring second');
                 }
 
                 return null; /* No node for DataTables to insert */
             },
-            sFeature: "ColResize",
+            sFeature: 'ColResize',
         });
     } else {
-        alert("Warning: ColResize requires DataTables 1.10.8 or greater - www.datatables.net/download");
+        alert('Warning: ColResize requires DataTables 1.10.8 or greater - www.datatables.net/download');
     }
 
 
