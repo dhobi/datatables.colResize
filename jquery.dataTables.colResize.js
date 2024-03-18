@@ -168,8 +168,7 @@
         fnSaveState: function () {
             let sizeMap = [];
             this._fnGetAllColumns().forEach(function (column) {
-                let oldWidth = column.nTh.offsetWidth;
-                sizeMap[column.idx] = oldWidth;
+                sizeMap[column.idx] = column.nTh.offsetWidth;
             });
             this.s.opts.stateSaveCallback(this.s.opts, sizeMap);
         },
@@ -439,7 +438,7 @@
             return parseInt(widthStr.match(/(\d+)px/ig));
         },
         _fnBoundCheck: function (changedWidth, element) {
-            let thWishWidth = (typeof this.s.state.originalWidth[element.index()] != 'undefined' ? this.s.state.originalWidth[element.index()] : this._fnGetCurrentWidth(element)) + changedWidth;
+            let thWishWidth = (typeof this.s.state.originalWidth[element.index()] !== 'undefined' ? this.s.state.originalWidth[element.index()] : this._fnGetCurrentWidth(element)) + changedWidth;
 
             // min bound
             if (this.s.state.minWidth !== -1 && thWishWidth < this.s.state.minWidth) {
@@ -572,8 +571,8 @@
 
 
     // Register a new feature with DataTables
-    if (typeof $.fn.dataTable == "function" &&
-        typeof $.fn.dataTableExt.fnVersionCheck == "function" &&
+    if (typeof $.fn.dataTable === "function" &&
+        typeof $.fn.dataTableExt.fnVersionCheck === "function" &&
         $.fn.dataTableExt.fnVersionCheck('1.10.8')) {
         $.fn.dataTableExt.aoFeatures.push({
             fnInit: function (settings) {
