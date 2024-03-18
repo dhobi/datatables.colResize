@@ -11,12 +11,12 @@
   ],
   "repository": {
     "type": "git",
-	  "url": "git+https://github.com/dhobi/datatables.colResize.git"
+    "url": "git+https://github.com/dhobi/datatables.colResize.git"
   },
   "keywords": [],
   "dependencies": {
-	  "datatables.net": ">=1.10.9",
-	  "jquery": ">=1.7"
+    "datatables.net": ">=1.10.9",
+    "jquery": ">=1.7"
   },
   "moduleType": [
     "globals",
@@ -26,7 +26,7 @@
   "author": "Daniel Hobi",
   "license": "MIT",
   "bugs": {
-	  "url": "https://github.com/dhobi/datatables.colResize/issues"
+    "url": "https://github.com/dhobi/datatables.colResize/issues"
   },
   "homepage": "https://github.com/dhobi/datatables.colResize#readme"
 }
