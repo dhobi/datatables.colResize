@@ -32,7 +32,7 @@
     }
 }(function ($, window, document) {
     'use strict';
-    function settingsFallback(userSetting, fallBackSetting) {
+    function settingsFallback (userSetting, fallBackSetting) {
         let resultObject = {};
         for (let prop in fallBackSetting) {
             if (!fallBackSetting.hasOwnProperty(prop)) {
@@ -419,7 +419,7 @@
                 width: 'auto',
                 fontFamily: $node.css('font-family'),
                 fontSize: $node.css('font-size'),
-                padding: $node.css('padding')
+                padding: $node.css('padding'),
             }).appendTo('body');
             let minWidth = parseInt($hiddenElement.width());
             $hiddenElement.remove();
@@ -505,7 +505,7 @@
         },
         _fnIsColumnResizable: function (column) {
             return this.s.opts.isResizable(column);
-        }
+        },
     });
 
     /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
@@ -546,7 +546,7 @@
             let data = localStorage.getItem(stateStorageName);
             return data != null ? JSON.parse(data) : null;
         },
-        getMinWidthOf: null
+        getMinWidthOf: null,
     };
 
     /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
