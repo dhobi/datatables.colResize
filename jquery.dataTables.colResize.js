@@ -13,8 +13,7 @@
         define(['jquery', 'datatables.net'], function ($) {
             return factory($, window, document);
         });
-    }
-    else if (typeof exports === 'object') {
+    } else if (typeof exports === 'object') {
         // CommonJS
         module.exports = function (root, $) {
             if (!root) {
@@ -27,14 +26,13 @@
 
             return factory($, root, root.document);
         };
-    }
-    else {
+    } else {
         // Browser
         factory(jQuery, window, document);
     }
 }(function ($, window, document) {
     'use strict';
-    function settingsFallback(userSetting, fallBackSetting) {
+    function settingsFallback (userSetting, fallBackSetting) {
         let resultObject = {};
         for (let prop in fallBackSetting) {
             if (!fallBackSetting.hasOwnProperty(prop)) {
@@ -81,7 +79,7 @@
             camelToHungarian(ColResize.defaults, opts || {});
         }
         this.s = {
-            dt: dt,
+            dt,
             state: {
                 isDragging: false,
                 startX: 0,
@@ -96,7 +94,7 @@
                 isLastColumnDragging: false,
                 maxTableWidth: 0,
             },
-            opts: opts
+            opts,
         };
         this.s.dt._colResize = this;
         if (this.s.opts.isEnabled) {
@@ -109,7 +107,7 @@
     $.extend(ColResize.prototype, {
         fnEnable: function () {
             if (this.isEnabled) {
-                this.s.dt.oInstance.oApi._fnLog(this.dt, 1, "ColResize: attempted to enable again. Ignoring.");
+                this.s.dt.oInstance.oApi._fnLog(this.dt, 1, 'ColResize: attempted to enable again. Ignoring.');
                 return;
             }
             this._fnConstruct();
@@ -121,11 +119,11 @@
                     return;
                 }
 
-                let widthResult = column.sWidth.match(/(\d+)/i),
-                    oldWidth = widthResult != null ? parseInt(widthResult[0]) : 0,
-                    newWidthResult = column._sResizableWidth.match(/(\d+)/i),
-                    newWidth = newWidthResult != null ? parseInt(newWidthResult[0]) : 0,
-                    $node = $(column.nTh);
+                let widthResult = column.sWidth.match(/(\d+)/i);
+                let oldWidth = widthResult != null ? parseInt(widthResult[0]) : 0;
+                let newWidthResult = column._sResizableWidth.match(/(\d+)/i);
+                let newWidth = newWidthResult != null ? parseInt(newWidthResult[0]) : 0;
+                let $node = $(column.nTh);
 
                 self.s.state.originalWidth[$node.index()] = oldWidth;
                 column.width = column._sResizableWidth;
@@ -135,13 +133,15 @@
             this.s.opts.onResizeEnd(null, this._fnGetAllColumns().map(this._fnMapColumn));
         },
         fnRestoreState: function () {
-            let self = this,
-                sizeMap = this.s.opts.stateLoadCallback(this.s.opts),
-                cols = this._fnGetAllColumns();
-            if (sizeMap == null) return;
+            let self = this;
+            let sizeMap = this.s.opts.stateLoadCallback(this.s.opts);
+            let cols = this._fnGetAllColumns();
+            if (sizeMap == null) {
+                return;
+            }
 
             if (sizeMap.length !== cols.length) {
-                this.s.dt.oInstance.oApi._fnLog(this.dt, 1, "ColResize: Array size doesn't match number of columns.");
+                this.s.dt.oInstance.oApi._fnLog(this.dt, 1, 'ColResize: Array size doesn\'t match number of columns.');
                 return;
             }
 
@@ -153,10 +153,10 @@
                     return;
                 }
 
-                let widthResult = column.sWidth.match(/(\d+)/i),
-                    oldWidth = widthResult != null ? parseInt(widthResult[0]) : 0,
-                    newWidth = sizeMap[column.idx],
-                    $node = $(column.nTh);
+                let widthResult = column.sWidth.match(/(\d+)/i);
+                let oldWidth = widthResult != null ? parseInt(widthResult[0]) : 0;
+                let newWidth = sizeMap[column.idx];
+                let $node = $(column.nTh);
 
                 self.s.state.originalWidth[$node.index()] = oldWidth;
                 column.width = newWidth + 'px';
@@ -168,14 +168,13 @@
         fnSaveState: function () {
             let sizeMap = [];
             this._fnGetAllColumns().forEach(function (column) {
-                let oldWidth = column.nTh.offsetWidth;
-                sizeMap[column.idx] = oldWidth;
+                sizeMap[column.idx] = column.nTh.offsetWidth;
             });
             this.s.opts.stateSaveCallback(this.s.opts, sizeMap);
         },
         fnDisable: function () {
             if (!this.isEnabled) {
-                this.s.dt.oInstance.oApi._fnLog(this.dt, 1, "ColResize: attempted to disable again. Ignoring.");
+                this.s.dt.oInstance.oApi._fnLog(this.dt, 1, 'ColResize: attempted to disable again. Ignoring.');
                 return;
             }
 
@@ -204,7 +203,7 @@
 
                     self.s.opts.onResize(self._fnMapColumn(self.s.state.column));
 
-                    //scroll if the last element gets resized
+                    // scroll if the last element gets resized
                     if (self.s.state.isLastColumnDragging) {
                         let $scrollBody = self._fnGetBodyScroll();
                         if ($scrollBody.length > 0) {
@@ -226,7 +225,7 @@
                 if (self.s.state.isDragging) {
                     // workaround to prevent sorting on column click
                     setTimeout(function () {
-                        //disable sorting
+                        // disable sorting
                         self._fnGetAllColumns().forEach(function (column) {
                             column.bSortable = column._bSortableTempHolder;
                         });
@@ -244,13 +243,13 @@
                 self.s.state.isDragging = false;
             });
 
-            //register column events
+            // register column events
 
             this._fnGetAllColumns().forEach(function (column) {
                 let $columnNode = $(column.nTh);
                 let isResizable = self._fnIsColumnResizable(column);
                 $columnNode.attr('data-is-resizable', isResizable.toString());
-                //save the original value (server) somewhere, we want the size of all of them.
+                // save the original value (server) somewhere, we want the size of all of them.
                 column._sResizableWidth = column.sWidth;
                 if (isResizable) {
                     $columnNode.on('mousemove.ColResize touchmove.ColResize', function (e) {
@@ -272,7 +271,7 @@
                     $columnNode.on('mousedown.ColResize touchstart.ColResize', function (e) {
                         let $node = $(e.currentTarget);
                         if (self._fnIsInDragArea($node, e)) {
-                            //disable sorting
+                            // disable sorting
                             self._fnGetAllColumns().forEach(function (column) {
                                 column._bSortableTempHolder = column.bSortable;
                                 column.bSortable = false;
@@ -313,7 +312,7 @@
         },
         _fnRemovePercentWidths: function (column, $node) {
             if ($node.attr('style') && $node.attr('style').indexOf('%') !== -1) {
-                this.s.dt.oInstance.oApi._fnLog(this.dt, 1, "ColResize: column styles in percentages is not supported, trying to convert to px on the fly.");
+                this.s.dt.oInstance.oApi._fnLog(this.dt, 1, 'ColResize: column styles in percentages is not supported, trying to convert to px on the fly.');
                 let width = $node.width();
                 $node.removeAttr('style');
                 column.sWidth = width + 'px';
@@ -333,14 +332,14 @@
         },
         _fnApplyWidth: function (changedWidth, element, column) {
             let self = this;
-            //keep inside bounds by manipulating changedWidth if any
+            // keep inside bounds by manipulating changedWidth if any
             changedWidth = this.s.opts.hasBoundCheck ? this._fnBoundCheck(changedWidth, element) : changedWidth;
 
-            //apply widths
+            // apply widths
             let thWidth = this.s.state.originalWidth[element.index()] + changedWidth;
             this._fnApplyWidthColumn(column, thWidth);
 
-            //change table size
+            // change table size
             let $table = element.closest('table');
             let shouldChangeTableWidth = element.closest('.dataTables_scroll').length > 0 &&
                 ($table.width() + changedWidth) > element.closest('.dataTables_scroll').width();
@@ -368,10 +367,10 @@
                     let currentIndex = $hbTh.index();
                     let currentStyles = $hbTh.attr('style') + additionalStylesForHiddenThRows;
 
-                    //body table
+                    // body table
                     let $sbTh = element.closest('.dataTables_scroll').find('.dataTables_scrollBody table th:nth-child(' + (currentIndex + 1) + ')');
                     $sbTh.attr('style', currentStyles);
-                    //footer table
+                    // footer table
                     let $sfTh = element.closest('.dataTables_scroll').find('.dataTables_scrollFoot table th:nth-child(' + (currentIndex + 1) + ')');
                     $sfTh.attr('style', currentStyles);
                 });
@@ -410,7 +409,7 @@
                 return minWidthFromCss;
             }
 
-            //try to guess
+            // try to guess
             let $hiddenElement = $node.clone().css({
                 left: -10000,
                 top: -10000,
@@ -420,12 +419,12 @@
                 width: 'auto',
                 fontFamily: $node.css('font-family'),
                 fontSize: $node.css('font-size'),
-                padding: $node.css('padding')
+                padding: $node.css('padding'),
             }).appendTo('body');
             let minWidth = parseInt($hiddenElement.width());
             $hiddenElement.remove();
             if (!$node.hasClass('sorting_disabled')) {
-                minWidth += 20; //sortable column needs a bit more space for the icon
+                minWidth += 20; // sortable column needs a bit more space for the icon
             }
             return minWidth < 30 ? 30 : minWidth;
         },
@@ -439,9 +438,9 @@
             return parseInt(widthStr.match(/(\d+)px/ig));
         },
         _fnBoundCheck: function (changedWidth, element) {
-            let thWishWidth = (typeof this.s.state.originalWidth[element.index()] != 'undefined' ? this.s.state.originalWidth[element.index()] : this._fnGetCurrentWidth(element)) + changedWidth;
+            let thWishWidth = (typeof this.s.state.originalWidth[element.index()] !== 'undefined' ? this.s.state.originalWidth[element.index()] : this._fnGetCurrentWidth(element)) + changedWidth;
 
-            //min bound
+            // min bound
             if (this.s.state.minWidth !== -1 && thWishWidth < this.s.state.minWidth) {
                 let addBackToMinWidth = this.s.state.minWidth - thWishWidth;
                 changedWidth += addBackToMinWidth;
@@ -450,7 +449,7 @@
                 this.s.state.minBoundAllowClass = true;
             }
 
-            //max bound
+            // max bound
             if (this.s.state.maxWidth !== -1 && thWishWidth > this.s.state.maxWidth) {
                 let substractFromMaxWidth = thWishWidth - this.s.state.maxWidth;
                 changedWidth -= substractFromMaxWidth;
@@ -506,7 +505,7 @@
         },
         _fnIsColumnResizable: function (column) {
             return this.s.opts.isResizable(column);
-        }
+        },
     });
 
     /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
@@ -539,15 +538,15 @@
         onResizeEnd: function (column, columns) {
         },
         stateSaveCallback: function (settings, data) {
-            let stateStorageName = window.location.pathname + "/colResizeStateData";
+            let stateStorageName = window.location.pathname + '/colResizeStateData';
             localStorage.setItem(stateStorageName, JSON.stringify(data));
         },
         stateLoadCallback: function (settings) {
-            let stateStorageName = window.location.pathname + "/colResizeStateData",
-                data = localStorage.getItem(stateStorageName);
+            let stateStorageName = window.location.pathname + '/colResizeStateData';
+            let data = localStorage.getItem(stateStorageName);
             return data != null ? JSON.parse(data) : null;
         },
-        getMinWidthOf: null
+        getMinWidthOf: null,
     };
 
     /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
@@ -560,7 +559,7 @@
      *  @type      String
      *  @default   As code
      */
-    ColResize.version = "1.7.0";
+    ColResize.version = '1.7.0';
 
     /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
      * DataTables interfaces
@@ -572,29 +571,27 @@
 
 
     // Register a new feature with DataTables
-    if (typeof $.fn.dataTable == "function" &&
-        typeof $.fn.dataTableExt.fnVersionCheck == "function" &&
+    if (typeof $.fn.dataTable === 'function' &&
+        typeof $.fn.dataTableExt.fnVersionCheck === 'function' &&
         $.fn.dataTableExt.fnVersionCheck('1.10.8')) {
         $.fn.dataTableExt.aoFeatures.push({
-            "fnInit": function (settings) {
+            fnInit: function (settings) {
                 let table = settings.oInstance;
 
                 if (!settings._colResize) {
                     let init = settings.oInit.colResize;
                     let opts = $.extend({}, init, DataTable.defaults.colResize);
                     new ColResize(settings, opts);
-                }
-                else {
-                    table.oApi._fnLog(settings, 1, "ColResize: attempted to initialise twice. Ignoring second");
+                } else {
+                    table.oApi._fnLog(settings, 1, 'ColResize: attempted to initialise twice. Ignoring second');
                 }
 
                 return null; /* No node for DataTables to insert */
             },
-            "sFeature": "ColResize"
+            sFeature: 'ColResize',
         });
-    }
-    else {
-        alert("Warning: ColResize requires DataTables 1.10.8 or greater - www.datatables.net/download");
+    } else {
+        alert('Warning: ColResize requires DataTables 1.10.8 or greater - www.datatables.net/download');
     }
 
 
