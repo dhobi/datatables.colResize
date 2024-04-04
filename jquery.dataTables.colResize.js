@@ -55,12 +55,12 @@
   const DataTable = $.fn.dataTable;
 
   /**
-     * ColResize provides column resizable control for DataTables
-     * @class ColResize
-     * @constructor
-     * @param {object} dt DataTables settings object
-     * @param {object} opts ColResize options
-     */
+   * ColResize provides column resizable control for DataTables
+   * @class ColResize
+   * @constructor
+   * @param {object} dt DataTables settings object
+   * @param {object} opts ColResize options
+   */
   const ColResize = function (dt, opts) {
     opts = settingsFallback(opts || {}, ColResize.defaults);
 
@@ -187,11 +187,11 @@
       this.isEnabled = false;
     },
     /**
-         * Constructor logic
-         *  @method  _fnConstruct
-         *  @returns void
-         *  @private
-         */
+     * Constructor logic
+     *  @method  _fnConstruct
+     *  @returns void
+     *  @private
+     */
     _fnConstruct: function () {
       const self = this;
 
@@ -509,14 +509,14 @@
   });
 
   /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-     * Static parameters
-     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+   * Static parameters
+   * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
   /**
-     * ColResize default settings for initialisation
-     *  @namespace
-     *  @static
-     */
+   * ColResize default settings for initialisation
+   *  @namespace
+   *  @static
+   */
   ColResize.defaults = {
     isEnabled: true,
     hoverClass: 'dt-colresizable-hover',
@@ -549,20 +549,20 @@
   };
 
   /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-     * Constants
-     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+   * Constants
+   * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
   /**
-     * ColResize version
-     *  @constant  version
-     *  @type      String
-     *  @default   As code
-     */
+   * ColResize version
+   *  @constant  version
+   *  @type      String
+   *  @default   As code
+   */
   ColResize.version = '1.7.0';
 
   /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-     * DataTables interfaces
-     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+   * DataTables interfaces
+   * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
   // Expose
   $.fn.dataTable.ColResize = ColResize;
