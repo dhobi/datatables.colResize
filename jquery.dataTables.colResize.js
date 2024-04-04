@@ -33,13 +33,13 @@
 }(function ($, window, document) {
   'use strict';
   function settingsFallback (userSetting, fallBackSetting) {
-    let resultObject = {};
-    for (let prop in fallBackSetting) {
+    const resultObject = {};
+    for (const prop in fallBackSetting) {
       if (!fallBackSetting.hasOwnProperty(prop)) {
         continue;
       }
       if (userSetting.hasOwnProperty(prop)) {
-        let userObject = userSetting[prop];
+        const userObject = userSetting[prop];
         if (typeof userObject === 'object') {
           resultObject[prop] = settingsFallback(userObject, fallBackSetting[prop]);
         } else {
@@ -52,7 +52,7 @@
     return resultObject;
   }
 
-  let DataTable = $.fn.dataTable;
+  const DataTable = $.fn.dataTable;
 
   /**
      * ColResize provides column resizable control for DataTables
@@ -61,10 +61,10 @@
      * @param {object} dt DataTables settings object
      * @param {object} opts ColResize options
      */
-  let ColResize = function (dt, opts) {
+  const ColResize = function (dt, opts) {
     opts = settingsFallback(opts || {}, ColResize.defaults);
 
-    let settings = new $.fn.dataTable.Api(dt).settings()[0];
+    const settings = new $.fn.dataTable.Api(dt).settings()[0];
     dt = settings;
 
     // Ensure that we can't initialise on the same table twice
@@ -73,7 +73,7 @@
     }
 
     // Convert from camelCase to Hungarian, just as DataTables does
-    let camelToHungarian = $.fn.dataTable.camelToHungarian;
+    const camelToHungarian = $.fn.dataTable.camelToHungarian;
     if (camelToHungarian) {
       camelToHungarian(ColResize.defaults, ColResize.defaults, true);
       camelToHungarian(ColResize.defaults, opts || {});
@@ -113,17 +113,17 @@
       this._fnConstruct();
     },
     fnReset: function () {
-      let self = this;
+      const self = this;
       this._fnGetAllColumns().forEach(function (column) {
         if (column.sWidth == null) {
           return;
         }
 
-        let widthResult = column.sWidth.match(/(\d+)/i);
-        let oldWidth = widthResult != null ? parseInt(widthResult[0]) : 0;
-        let newWidthResult = column._sResizableWidth.match(/(\d+)/i);
-        let newWidth = newWidthResult != null ? parseInt(newWidthResult[0]) : 0;
-        let $node = $(column.nTh);
+        const widthResult = column.sWidth.match(/(\d+)/i);
+        const oldWidth = widthResult != null ? parseInt(widthResult[0]) : 0;
+        const newWidthResult = column._sResizableWidth.match(/(\d+)/i);
+        const newWidth = newWidthResult != null ? parseInt(newWidthResult[0]) : 0;
+        const $node = $(column.nTh);
 
         self.s.state.originalWidth[$node.index()] = oldWidth;
         column.width = column._sResizableWidth;
@@ -133,9 +133,9 @@
       this.s.opts.onResizeEnd(null, this._fnGetAllColumns().map(this._fnMapColumn));
     },
     fnRestoreState: function () {
-      let self = this;
-      let sizeMap = this.s.opts.stateLoadCallback(this.s.opts);
-      let cols = this._fnGetAllColumns();
+      const self = this;
+      const sizeMap = this.s.opts.stateLoadCallback(this.s.opts);
+      const cols = this._fnGetAllColumns();
       if (sizeMap == null) {
         return;
       }
@@ -153,10 +153,10 @@
           return;
         }
 
-        let widthResult = column.sWidth.match(/(\d+)/i);
-        let oldWidth = widthResult != null ? parseInt(widthResult[0]) : 0;
-        let newWidth = sizeMap[column.idx];
-        let $node = $(column.nTh);
+        const widthResult = column.sWidth.match(/(\d+)/i);
+        const oldWidth = widthResult != null ? parseInt(widthResult[0]) : 0;
+        const newWidth = sizeMap[column.idx];
+        const $node = $(column.nTh);
 
         self.s.state.originalWidth[$node.index()] = oldWidth;
         column.width = newWidth + 'px';
@@ -166,7 +166,7 @@
       this.s.opts.onResizeEnd(null, this._fnGetAllColumns().map(this._fnMapColumn));
     },
     fnSaveState: function () {
-      let sizeMap = [];
+      const sizeMap = [];
       this._fnGetAllColumns().forEach(function (column) {
         sizeMap[column.idx] = column.nTh.offsetWidth;
       });
@@ -180,7 +180,7 @@
 
       $(document).off('.ColResize');
       this._fnGetAllColumns().forEach(function (column) {
-        let $columnNode = $(column.nTh);
+        const $columnNode = $(column.nTh);
         $columnNode.off('.ColResize');
         $columnNode.removeAttr('data-is-resizable');
       });
@@ -193,19 +193,19 @@
          *  @private
          */
     _fnConstruct: function () {
-      let self = this;
+      const self = this;
 
       // register document events
       $(document).on('mousemove.ColResize touchmove.ColResize', function (e) {
         if (self.s.state.isDragging) {
-          let changedWidth = self._fnGetXCoords(e) - self.s.state.startX;
+          const changedWidth = self._fnGetXCoords(e) - self.s.state.startX;
           self._fnApplyWidth(changedWidth, self.s.state.$element, self.s.state.column);
 
           self.s.opts.onResize(self._fnMapColumn(self.s.state.column));
 
           // scroll if the last element gets resized
           if (self.s.state.isLastColumnDragging) {
-            let $scrollBody = self._fnGetBodyScroll();
+            const $scrollBody = self._fnGetBodyScroll();
             if ($scrollBody.length > 0) {
               $scrollBody[0].scrollLeft = $scrollBody[0].scrollWidth;
             }
@@ -213,7 +213,7 @@
 
           // do not outgrow table if not scrollable
           if (self.s.state.maxTableWidth > 0) {
-            let currentTableWidth = self.s.state.$element.closest('table').width();
+            const currentTableWidth = self.s.state.$element.closest('table').width();
             if (currentTableWidth > self.s.state.maxTableWidth) {
               self._fnApplyWidth(changedWidth + (self.s.state.maxTableWidth - currentTableWidth, self.s.state.$element, self.s.state.column));
               self._fnShowMaxBoundReached();
@@ -231,7 +231,7 @@
             });
           }, 100);
           // callback
-          let mappedColumns = self._fnGetAllColumns().map(self._fnMapColumn);
+          const mappedColumns = self._fnGetAllColumns().map(self._fnMapColumn);
           self.s.opts.onResizeEnd(self._fnMapColumn(self.s.state.column), mappedColumns);
           if (self.s.opts.saveState) {
             self.fnSaveState();
@@ -246,14 +246,14 @@
       // register column events
 
       this._fnGetAllColumns().forEach(function (column) {
-        let $columnNode = $(column.nTh);
-        let isResizable = self._fnIsColumnResizable(column);
+        const $columnNode = $(column.nTh);
+        const isResizable = self._fnIsColumnResizable(column);
         $columnNode.attr('data-is-resizable', isResizable.toString());
         // save the original value (server) somewhere, we want the size of all of them.
         column._sResizableWidth = column.sWidth;
         if (isResizable) {
           $columnNode.on('mousemove.ColResize touchmove.ColResize', function (e) {
-            let $node = $(e.currentTarget);
+            const $node = $(e.currentTarget);
             if (self._fnIsInDragArea($node, e)) {
               $node.addClass(self.s.opts.hoverClass);
             } else {
@@ -264,12 +264,12 @@
           });
           $columnNode.on('mouseout.ColResize', function (e) {
             if (!self.s.state.isDragging) {
-              let $node = $(e.currentTarget);
+              const $node = $(e.currentTarget);
               $node.removeClass(self.s.opts.hoverClass);
             }
           });
           $columnNode.on('mousedown.ColResize touchstart.ColResize', function (e) {
-            let $node = $(e.currentTarget);
+            const $node = $(e.currentTarget);
             if (self._fnIsInDragArea($node, e)) {
               // disable sorting
               self._fnGetAllColumns().forEach(function (column) {
@@ -313,7 +313,7 @@
     _fnRemovePercentWidths: function (column, $node) {
       if ($node.attr('style') && $node.attr('style').indexOf('%') !== -1) {
         this.s.dt.oInstance.oApi._fnLog(this.dt, 1, 'ColResize: column styles in percentages is not supported, trying to convert to px on the fly.');
-        let width = $node.width();
+        const width = $node.width();
         $node.removeAttr('style');
         column.sWidth = width + 'px';
         column.width = width + 'px';
@@ -323,55 +323,55 @@
       }
     },
     _fnIsInDragArea: function ($th, e) {
-      let rightSide = $th.offset().left + $th.outerWidth();
-      let xCoord = this._fnGetXCoords(e);
+      const rightSide = $th.offset().left + $th.outerWidth();
+      const xCoord = this._fnGetXCoords(e);
       return (rightSide + 10) > xCoord && (rightSide - 10) < xCoord;
     },
     _fnGetXCoords: function (e) {
       return e.type.indexOf('touch') !== -1 ? e.originalEvent.touches[0].pageX : e.pageX;
     },
     _fnApplyWidth: function (changedWidth, element, column) {
-      let self = this;
+      const self = this;
       // keep inside bounds by manipulating changedWidth if any
       changedWidth = this.s.opts.hasBoundCheck ? this._fnBoundCheck(changedWidth, element) : changedWidth;
 
       // apply widths
-      let thWidth = this.s.state.originalWidth[element.index()] + changedWidth;
+      const thWidth = this.s.state.originalWidth[element.index()] + changedWidth;
       this._fnApplyWidthColumn(column, thWidth);
 
       // change table size
-      let $table = element.closest('table');
-      let shouldChangeTableWidth = element.closest('.dataTables_scroll').length > 0 &&
+      const $table = element.closest('table');
+      const shouldChangeTableWidth = element.closest('.dataTables_scroll').length > 0 &&
                 ($table.width() + changedWidth) > element.closest('.dataTables_scroll').width();
       if (shouldChangeTableWidth) {
         $table.width(self.s.state.originalTableWidth + changedWidth);
       }
 
       // possible body table
-      let scrollBodyTh = element.closest('.dataTables_scroll').find('.dataTables_scrollBody table th:nth-child(' + (element.index() + 1) + ')');
+      const scrollBodyTh = element.closest('.dataTables_scroll').find('.dataTables_scrollBody table th:nth-child(' + (element.index() + 1) + ')');
       scrollBodyTh.outerWidth((thWidth) + 'px');
-      let $bodyTable = scrollBodyTh.closest('table');
+      const $bodyTable = scrollBodyTh.closest('table');
       $bodyTable.width($table.width());
 
       // possible footer table
-      let scrollFooterTh = element.closest('.dataTables_scroll').find('.dataTables_scrollFoot table th:nth-child(' + (element.index() + 1) + ')');
+      const scrollFooterTh = element.closest('.dataTables_scroll').find('.dataTables_scrollFoot table th:nth-child(' + (element.index() + 1) + ')');
       scrollFooterTh.outerWidth((thWidth) + 'px');
-      let $footerTable = scrollFooterTh.closest('table');
+      const $footerTable = scrollFooterTh.closest('table');
       $footerTable.width($table.width());
 
       // HTML table can force columns to be wider than max-width and smaller than min-width. Overwrite style properties to look the same as the header
       if (element.closest('.dataTables_scroll').length > 0) {
-        let additionalStylesForHiddenThRows = ';padding-top: 0px;padding-bottom: 0px;border-top-width: 0px;border-bottom-width: 0px;height: 0px;';
+        const additionalStylesForHiddenThRows = ';padding-top: 0px;padding-bottom: 0px;border-top-width: 0px;border-bottom-width: 0px;height: 0px;';
         this._fnGetAllColumns().forEach(function (column) {
-          let $hbTh = $(column.nTh);
-          let currentIndex = $hbTh.index();
-          let currentStyles = $hbTh.attr('style') + additionalStylesForHiddenThRows;
+          const $hbTh = $(column.nTh);
+          const currentIndex = $hbTh.index();
+          const currentStyles = $hbTh.attr('style') + additionalStylesForHiddenThRows;
 
           // body table
-          let $sbTh = element.closest('.dataTables_scroll').find('.dataTables_scrollBody table th:nth-child(' + (currentIndex + 1) + ')');
+          const $sbTh = element.closest('.dataTables_scroll').find('.dataTables_scrollBody table th:nth-child(' + (currentIndex + 1) + ')');
           $sbTh.attr('style', currentStyles);
           // footer table
-          let $sfTh = element.closest('.dataTables_scroll').find('.dataTables_scrollFoot table th:nth-child(' + (currentIndex + 1) + ')');
+          const $sfTh = element.closest('.dataTables_scroll').find('.dataTables_scrollFoot table th:nth-child(' + (currentIndex + 1) + ')');
           $sfTh.attr('style', currentStyles);
         });
       }
@@ -381,14 +381,14 @@
       column.sWidth = width + 'px';
     },
     _fnGetCurrentWidth: function ($node) {
-      let possibleWidths = $node.attr('style').split(';').map(function (cssPart) {
+      const possibleWidths = $node.attr('style').split(';').map(function (cssPart) {
         return cssPart.trim();
       })
         .filter(function (cssPart) {
           return cssPart !== '';
         })
         .map(function (cssPart) {
-          let widthResult = cssPart.match(/^width: (\d+)px/i);
+          const widthResult = cssPart.match(/^width: (\d+)px/i);
           return widthResult != null ? parseInt(widthResult[1]) : 0;
         })
         .filter(function (possibleWidth) {
@@ -404,13 +404,13 @@
       if (this.s.opts.getMinWidthOf != null) {
         return this.s.opts.getMinWidthOf($node);
       }
-      let minWidthFromCss = this._fnGetWidthOfValue($node.css('min-width'));
+      const minWidthFromCss = this._fnGetWidthOfValue($node.css('min-width'));
       if (!isNaN(minWidthFromCss) && minWidthFromCss > 0) {
         return minWidthFromCss;
       }
 
       // try to guess
-      let $hiddenElement = $node.clone().css({
+      const $hiddenElement = $node.clone().css({
         left: -10000,
         top: -10000,
         position: 'absolute',
@@ -438,11 +438,11 @@
       return parseInt(widthStr.match(/(\d+)px/ig));
     },
     _fnBoundCheck: function (changedWidth, element) {
-      let thWishWidth = (typeof this.s.state.originalWidth[element.index()] !== 'undefined' ? this.s.state.originalWidth[element.index()] : this._fnGetCurrentWidth(element)) + changedWidth;
+      const thWishWidth = (typeof this.s.state.originalWidth[element.index()] !== 'undefined' ? this.s.state.originalWidth[element.index()] : this._fnGetCurrentWidth(element)) + changedWidth;
 
       // min bound
       if (this.s.state.minWidth !== -1 && thWishWidth < this.s.state.minWidth) {
-        let addBackToMinWidth = this.s.state.minWidth - thWishWidth;
+        const addBackToMinWidth = this.s.state.minWidth - thWishWidth;
         changedWidth += addBackToMinWidth;
         this._fnShowMinBoundReached();
       } else {
@@ -451,7 +451,7 @@
 
       // max bound
       if (this.s.state.maxWidth !== -1 && thWishWidth > this.s.state.maxWidth) {
-        let substractFromMaxWidth = thWishWidth - this.s.state.maxWidth;
+        const substractFromMaxWidth = thWishWidth - this.s.state.maxWidth;
         changedWidth -= substractFromMaxWidth;
         this._fnShowMaxBoundReached();
       } else {
@@ -461,10 +461,10 @@
       return changedWidth;
     },
     _fnShowMinBoundReached: function () {
-      let self = this;
+      const self = this;
       if (this.s.state.minBoundAllowClass && this.s.state.$element) {
         this.s.state.$element.addClass(this.s.opts.minBoundClass);
-        let $currentElement = this.s.state.$element;
+        const $currentElement = this.s.state.$element;
         setTimeout(function () {
           $currentElement.removeClass(self.s.opts.minBoundClass);
         }, 500);
@@ -473,10 +473,10 @@
     },
 
     _fnShowMaxBoundReached: function () {
-      let self = this;
+      const self = this;
       if (this.s.state.maxBoundAllowClass && this.s.state.$element) {
         this.s.state.$element.addClass(this.s.opts.maxBoundClass);
-        let $currentElement = this.s.state.$element;
+        const $currentElement = this.s.state.$element;
         setTimeout(function () {
           $currentElement.removeClass(self.s.opts.maxBoundClass);
         }, 500);
@@ -488,15 +488,15 @@
       return { idx: column.idx, width: column.sWidth };
     },
     _fnIsLastResizableColumnDragging: function (draggingColumn) {
-      let visibleColumns = this._fnGetAllColumns().filter(function (column) {
+      const visibleColumns = this._fnGetAllColumns().filter(function (column) {
         return $(column.nTh).is(':visible');
       });
-      let indexOfColumn = visibleColumns.indexOf(draggingColumn);
+      const indexOfColumn = visibleColumns.indexOf(draggingColumn);
       if (indexOfColumn === visibleColumns.length - 1) {
         return true;
       }
       for (let counter = indexOfColumn + 1; counter < visibleColumns.length; counter++) {
-        let column = visibleColumns[counter];
+        const column = visibleColumns[counter];
         if (this._fnIsColumnResizable(column)) {
           return false;
         }
@@ -511,7 +511,6 @@
   /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
      * Static parameters
      * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-
 
   /**
      * ColResize default settings for initialisation
@@ -538,12 +537,12 @@
     onResizeEnd: function (column, columns) {
     },
     stateSaveCallback: function (settings, data) {
-      let stateStorageName = window.location.pathname + '/colResizeStateData';
+      const stateStorageName = window.location.pathname + '/colResizeStateData';
       localStorage.setItem(stateStorageName, JSON.stringify(data));
     },
     stateLoadCallback: function (settings) {
-      let stateStorageName = window.location.pathname + '/colResizeStateData';
-      let data = localStorage.getItem(stateStorageName);
+      const stateStorageName = window.location.pathname + '/colResizeStateData';
+      const data = localStorage.getItem(stateStorageName);
       return data != null ? JSON.parse(data) : null;
     },
     getMinWidthOf: null,
@@ -569,18 +568,17 @@
   $.fn.dataTable.ColResize = ColResize;
   $.fn.DataTable.ColResize = ColResize;
 
-
   // Register a new feature with DataTables
   if (typeof $.fn.dataTable === 'function' &&
         typeof $.fn.dataTableExt.fnVersionCheck === 'function' &&
         $.fn.dataTableExt.fnVersionCheck('1.10.8')) {
     $.fn.dataTableExt.aoFeatures.push({
       fnInit: function (settings) {
-        let table = settings.oInstance;
+        const table = settings.oInstance;
 
         if (!settings._colResize) {
-          let init = settings.oInit.colResize;
-          let opts = $.extend({}, init, DataTable.defaults.colResize);
+          const init = settings.oInit.colResize;
+          const opts = $.extend({}, init, DataTable.defaults.colResize);
           new ColResize(settings, opts);
         } else {
           table.oApi._fnLog(settings, 1, 'ColResize: attempted to initialise twice. Ignoring second');
@@ -594,7 +592,6 @@
     alert('Warning: ColResize requires DataTables 1.10.8 or greater - www.datatables.net/download');
   }
 
-
   // Attach a listener to the document which listens for DataTables initialisation
   // events so we can automatically initialise
   $(document).on('preInit.dt.colResize', function (e, settings) {
@@ -602,11 +599,11 @@
       return;
     }
 
-    let init = settings.oInit.colResize;
-    let defaults = DataTable.defaults.colResize;
+    const init = settings.oInit.colResize;
+    const defaults = DataTable.defaults.colResize;
 
     if (init || defaults) {
-      let opts = $.extend({}, init, defaults);
+      const opts = $.extend({}, init, defaults);
 
       if (init !== false) {
         new ColResize(settings, opts);
