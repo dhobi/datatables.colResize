@@ -325,7 +325,7 @@
     _fnIsInDragArea: function ($th, e) {
       const rightSide = $th.offset().left + $th.outerWidth();
       const xCoord = this._fnGetXCoords(e);
-      return (rightSide + 10) > xCoord && (rightSide - 10) < xCoord;
+      return rightSide + 10 > xCoord && rightSide - 10 < xCoord;
     },
     _fnGetXCoords: function (e) {
       return e.type.indexOf('touch') !== -1 ? e.originalEvent.touches[0].pageX : e.pageX;
@@ -348,14 +348,18 @@
       }
 
       // possible body table
-      const scrollBodyTh = element.closest('.dataTables_scroll').find('.dataTables_scrollBody table th:nth-child(' + (element.index() + 1) + ')');
-      scrollBodyTh.outerWidth((thWidth) + 'px');
+      const scrollBodyTh = element
+        .closest('.dataTables_scroll')
+        .find('.dataTables_scrollBody table th:nth-child(' + (element.index() + 1) + ')');
+      scrollBodyTh.outerWidth(thWidth + 'px');
       const $bodyTable = scrollBodyTh.closest('table');
       $bodyTable.width($table.width());
 
       // possible footer table
-      const scrollFooterTh = element.closest('.dataTables_scroll').find('.dataTables_scrollFoot table th:nth-child(' + (element.index() + 1) + ')');
-      scrollFooterTh.outerWidth((thWidth) + 'px');
+      const scrollFooterTh = element
+        .closest('.dataTables_scroll')
+        .find('.dataTables_scrollFoot table th:nth-child(' + (element.index() + 1) + ')');
+      scrollFooterTh.outerWidth(thWidth + 'px');
       const $footerTable = scrollFooterTh.closest('table');
       $footerTable.width($table.width());
 
@@ -368,10 +372,14 @@
           const currentStyles = $hbTh.attr('style') + additionalStylesForHiddenThRows;
 
           // body table
-          const $sbTh = element.closest('.dataTables_scroll').find('.dataTables_scrollBody table th:nth-child(' + (currentIndex + 1) + ')');
+          const $sbTh = element
+            .closest('.dataTables_scroll')
+            .find('.dataTables_scrollBody table th:nth-child(' + (currentIndex + 1) + ')');
           $sbTh.attr('style', currentStyles);
           // footer table
-          const $sfTh = element.closest('.dataTables_scroll').find('.dataTables_scrollFoot table th:nth-child(' + (currentIndex + 1) + ')');
+          const $sfTh = element
+            .closest('.dataTables_scroll')
+            .find('.dataTables_scrollFoot table th:nth-child(' + (currentIndex + 1) + ')');
           $sfTh.attr('style', currentStyles);
         });
       }
@@ -381,9 +389,12 @@
       column.sWidth = width + 'px';
     },
     _fnGetCurrentWidth: function ($node) {
-      const possibleWidths = $node.attr('style').split(';').map(function (cssPart) {
-        return cssPart.trim();
-      })
+      const possibleWidths = $node
+        .attr('style')
+        .split(';')
+        .map(function (cssPart) {
+          return cssPart.trim();
+        })
         .filter(function (cssPart) {
           return cssPart !== '';
         })
@@ -410,17 +421,20 @@
       }
 
       // try to guess
-      const $hiddenElement = $node.clone().css({
-        left: -10000,
-        top: -10000,
-        position: 'absolute',
-        display: 'inline',
-        visibility: 'visible',
-        width: 'auto',
-        fontFamily: $node.css('font-family'),
-        fontSize: $node.css('font-size'),
-        padding: $node.css('padding'),
-      }).appendTo('body');
+      const $hiddenElement = $node
+        .clone()
+        .css({
+          left: -10000,
+          top: -10000,
+          position: 'absolute',
+          display: 'inline',
+          visibility: 'visible',
+          width: 'auto',
+          fontFamily: $node.css('font-family'),
+          fontSize: $node.css('font-size'),
+          padding: $node.css('padding'),
+        })
+        .appendTo('body');
       let minWidth = parseInt($hiddenElement.width());
       $hiddenElement.remove();
       if (!$node.hasClass('sorting_disabled')) {
@@ -435,7 +449,7 @@
       if (widthStr === 'none') {
         return -1;
       }
-      return parseInt(widthStr.match(/(\d+)px/ig));
+      return parseInt(widthStr.match(/(\d+)px/gi));
     },
     _fnBoundCheck: function (changedWidth, element) {
       const thWishWidth = (typeof this.s.state.originalWidth[element.index()] !== 'undefined' ? this.s.state.originalWidth[element.index()] : this._fnGetCurrentWidth(element)) + changedWidth;
@@ -530,12 +544,9 @@
       }
       return column.isResizable;
     },
-    onResizeStart: function (column, columns) {
-    },
-    onResize: function (column) {
-    },
-    onResizeEnd: function (column, columns) {
-    },
+    onResizeStart: function (column, columns) {},
+    onResize: function (column) {},
+    onResizeEnd: function (column, columns) {},
     stateSaveCallback: function (settings, data) {
       const stateStorageName = window.location.pathname + '/colResizeStateData';
       localStorage.setItem(stateStorageName, JSON.stringify(data));
@@ -569,9 +580,11 @@
   $.fn.DataTable.ColResize = ColResize;
 
   // Register a new feature with DataTables
-  if (typeof $.fn.dataTable === 'function' &&
-        typeof $.fn.dataTableExt.fnVersionCheck === 'function' &&
-        $.fn.dataTableExt.fnVersionCheck('1.10.8')) {
+  if (
+    typeof $.fn.dataTable === 'function' &&
+    typeof $.fn.dataTableExt.fnVersionCheck === 'function' &&
+    $.fn.dataTableExt.fnVersionCheck('1.10.8')
+  ) {
     $.fn.dataTableExt.aoFeatures.push({
       fnInit: function (settings) {
         const table = settings.oInstance;
