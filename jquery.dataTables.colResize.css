@@ -3,7 +3,7 @@
   border-inline-end: 1px dashed #bfbfbf;
 }
 table.dataTable thead th.dt-colresizable-hover {
-  cursor: col-resize;
+  cursor: col-resize !important;
   background-color: #eaeaea;
   border-inline-start: 1px solid #bfbfbf;
  }

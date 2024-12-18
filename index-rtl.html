@@ -1,21 +1,19 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<title>jquery.dataTables colResize test</title>
-	
-	<script src="https://code.jquery.com/jquery-2.2.4.min.js"></script>
-	
-	<!-- DataTable -->
-	<link rel="stylesheet" href="https://cdn.datatables.net/1.10.22/css/jquery.dataTables.min.css">
-	<script src="https://cdn.datatables.net/1.10.22/js/jquery.dataTables.min.js"></script>
-	
-	<!-- Plugin -->
-	<link rel="stylesheet" href="jquery.dataTables.colResize.css">
-	<script src="jquery.dataTables.colResize.js"></script>
-	
-	<script>
-		$(document).ready(function () {
-			$('#example').DataTable({
+    <title>jquery.dataTables colResize test</title>
+
+    <link href="https://cdn.datatables.net/v/dt/jq-3.7.0/dt-2.1.8/datatables.min.css" rel="stylesheet">
+
+    <script src="https://cdn.datatables.net/v/dt/jq-3.7.0/dt-2.1.8/datatables.min.js"></script>
+
+    <!-- Plugin -->
+    <link rel="stylesheet" href="jquery.dataTables.colResize.css">
+    <script src="jquery.dataTables.colResize.js"></script>
+
+    <script>
+        $(document).ready(function () {
+            $('#example').DataTable({
                 scrollX: true,
                 colResize: {
                     isEnabled: true,
@@ -43,9 +41,9 @@
                         return data != null ? JSON.parse(data) : null;
                     }
                 }
-			});
-		});
-	</script>
+            });
+        });
+    </script>
 </head>
 
 <body style="direction: rtl">
