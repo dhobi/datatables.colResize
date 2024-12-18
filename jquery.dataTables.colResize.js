@@ -199,7 +199,8 @@
             // register document events
             $(document).on('mousemove.ColResize touchmove.ColResize', function (e) {
                 if (self.s.state.isDragging) {
-                    let changedWidth = self._fnGetXCoords(e) - self.s.state.startX;
+                    let changedWidth = (self._fnGetXCoords(e) - self.s.state.startX)
+                            * (self._isRtl() ? -1: 1);
                     self._fnApplyWidth(changedWidth, self.s.state.$element, self.s.state.column);
 
                     self.s.opts.onResize(self._fnMapColumn(self.s.state.column));
@@ -324,9 +325,14 @@
             }
         },
         _fnIsInDragArea: function ($th, e) {
-            let rightSide = $th.offset().left + $th.outerWidth();
+            let inlineEndSide = $th.offset().left;
+
+            if (!this._isRtl()) {
+                inlineEndSide += $th.outerWidth();
+            }
+
             let xCoord = this._fnGetXCoords(e);
-            return (rightSide + 10) > xCoord && (rightSide - 10) < xCoord;
+            return (inlineEndSide + 10) > xCoord && (inlineEndSide - 10) < xCoord;
         },
         _fnGetXCoords: function (e) {
             return e.type.indexOf('touch') !== -1 ? e.originalEvent.touches[0].pageX : e.pageX;
@@ -506,6 +512,9 @@
         },
         _fnIsColumnResizable: function (column) {
             return this.s.opts.isResizable(column);
+        },
+        _isRtl: function () {
+            return $(this.s.dt.nTable).css('direction') === 'rtl';
         }
     });
 
