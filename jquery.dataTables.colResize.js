@@ -125,9 +125,9 @@
                     oldWidth = widthResult != null ? parseInt(widthResult[0]) : 0,
                     newWidthResult = column._sResizableWidth.match(/(\d+)/i),
                     newWidth = newWidthResult != null ? parseInt(newWidthResult[0]) : 0,
-                    $node = $(column.nTh);
+                    $node = $(column.colEl);
 
-                self.s.state.originalWidth[$node.index()] = oldWidth;
+                self.s.state.originalWidth[$node.attr("data-dt-column")] = oldWidth;
                 column.width = column._sResizableWidth;
                 column.sWidth = column._sResizableWidth;
                 self._fnApplyWidth(newWidth - oldWidth, $node, column);
@@ -156,9 +156,9 @@
                 let widthResult = column.sWidth.match(/(\d+)/i),
                     oldWidth = widthResult != null ? parseInt(widthResult[0]) : 0,
                     newWidth = sizeMap[column.idx],
-                    $node = $(column.nTh);
+                    $node = $(column.colEl);
 
-                self.s.state.originalWidth[$node.index()] = oldWidth;
+                self.s.state.originalWidth[$node.attr("data-dt-column")] = oldWidth;
                 column.width = newWidth + 'px';
                 column.sWidth = newWidth + 'px';
                 self._fnApplyWidth(newWidth - oldWidth, $node, column);
@@ -168,7 +168,7 @@
         fnSaveState: function () {
             let sizeMap = [];
             this._fnGetAllColumns().forEach(function (column) {
-                let oldWidth = column.nTh.offsetWidth;
+                let oldWidth = column.colEl.offsetWidth;
                 sizeMap[column.idx] = oldWidth;
             });
             this.s.opts.stateSaveCallback(this.s.opts, sizeMap);
@@ -247,6 +247,7 @@
             //register column events
 
             this._fnGetAllColumns().forEach(function (column) {
+                let $columnEle = $(column.colEl);
                 let $columnNode = $(column.nTh);
                 let isResizable = self._fnIsColumnResizable(column);
                 $columnNode.attr('data-is-resizable', isResizable.toString());
@@ -276,16 +277,16 @@
                             self._fnGetAllColumns().forEach(function (column) {
                                 column._bSortableTempHolder = column.bSortable;
                                 column.bSortable = false;
-                                self._fnRemovePercentWidths(column, $(column.nTh));
+                                self._fnRemovePercentWidths(column, $(column.colEl));
                             });
 
                             self.s.state.isDragging = true;
                             self.s.state.startX = self._fnGetXCoords(e);
                             self.s.state.maxTableWidth = self._fnGetBodyScroll().length > 0 ? 0 : $node.closest('table').width();
                             self.s.state.originalTableWidth = $node.closest('table').width();
-                            self.s.state.originalWidth[$node.index()] = self._fnGetCurrentWidth($node);
-                            self.s.state.minWidth = self._fnGetMinWidthOf($node);
-                            self.s.state.maxWidth = self._fnGetMaxWidthOf($node);
+                            self.s.state.originalWidth[$node.attr("data-dt-column")] = self._fnGetCurrentWidth($columnEle);
+                            self.s.state.minWidth = self._fnGetMinWidthOf($columnEle);
+                            self.s.state.maxWidth = self._fnGetMaxWidthOf($columnEle);
                             self.s.state.minBoundAllowClass = true;
                             self.s.state.maxBoundAllowClass = true;
                             self.s.state.$element = $node;
@@ -303,7 +304,13 @@
             }
         },
         _fnGetAllColumns: function () {
-            return this.s.dt.aoColumns;
+            let columns = []
+            let table = $(this.s.dt.nTable)
+            this.s.dt.aoColumns.forEach(function (column) {
+                column.nTh = $('th:nth-child(' + (parseInt(column.colEl.attr("data-dt-column")) + 1) + ')', table)
+                columns.push(column)
+            })
+            return columns;
         },
         _fnGetBodyScroll: function () {
             return $(this.s.dt.nScrollBody);
@@ -314,7 +321,7 @@
         _fnRemovePercentWidths: function (column, $node) {
             if ($node.attr('style') && $node.attr('style').indexOf('%') !== -1) {
                 this.s.dt.oInstance.oApi._fnLog(this.dt, 1, "ColResize: column styles in percentages is not supported, trying to convert to px on the fly.");
-                let width = $node.width();
+                let width = $node.outerWidth();
                 $node.removeAttr('style');
                 column.sWidth = width + 'px';
                 column.width = width + 'px';
@@ -332,12 +339,13 @@
             return e.type.indexOf('touch') !== -1 ? e.originalEvent.touches[0].pageX : e.pageX;
         },
         _fnApplyWidth: function (changedWidth, element, column) {
+            if (element == null) { return }
             let self = this;
             //keep inside bounds by manipulating changedWidth if any
             changedWidth = this.s.opts.hasBoundCheck ? this._fnBoundCheck(changedWidth, element) : changedWidth;
 
             //apply widths
-            let thWidth = this.s.state.originalWidth[element.index()] + changedWidth;
+            let thWidth = this.s.state.originalWidth[element.attr("data-dt-column")] + changedWidth;
             this._fnApplyWidthColumn(column, thWidth);
 
             //change table size
@@ -349,13 +357,13 @@
             }
 
             // possible body table
-            let scrollBodyTh = element.closest('.dataTables_scroll').find('.dataTables_scrollBody table th:nth-child(' + (element.index() + 1) + ')');
+            let scrollBodyTh = element.closest('.dataTables_scroll').find('.dataTables_scrollBody table th:nth-child(' + (element.attr("data-dt-column")) + ')');
             scrollBodyTh.outerWidth((thWidth) + 'px');
             let $bodyTable = scrollBodyTh.closest('table');
             $bodyTable.width($table.width());
 
             // possible footer table
-            let scrollFooterTh = element.closest('.dataTables_scroll').find('.dataTables_scrollFoot table th:nth-child(' + (element.index() + 1) + ')');
+            let scrollFooterTh = element.closest('.dataTables_scroll').find('.dataTables_scrollFoot table th:nth-child(' + (element.attr("data-dt-column")) + ')');
             scrollFooterTh.outerWidth((thWidth) + 'px');
             let $footerTable = scrollFooterTh.closest('table');
             $footerTable.width($table.width());
@@ -364,24 +372,25 @@
             if (element.closest('.dataTables_scroll').length > 0) {
                 let additionalStylesForHiddenThRows = ';padding-top: 0px;padding-bottom: 0px;border-top-width: 0px;border-bottom-width: 0px;height: 0px;';
                 this._fnGetAllColumns().forEach(function (column) {
-                    let $hbTh = $(column.nTh);
-                    let currentIndex = $hbTh.index();
+                    let $hbTh = $(column.colEl);
+                    let currentIndex = $hbTh.attr("data-dt-column");
                     let currentStyles = $hbTh.attr('style') + additionalStylesForHiddenThRows;
 
                     //body table
-                    let $sbTh = element.closest('.dataTables_scroll').find('.dataTables_scrollBody table th:nth-child(' + (currentIndex + 1) + ')');
+                    let $sbTh = element.closest('.dataTables_scroll').find('.dataTables_scrollBody table th:nth-child(' + (currentIndex) + ')');
                     $sbTh.attr('style', currentStyles);
                     //footer table
-                    let $sfTh = element.closest('.dataTables_scroll').find('.dataTables_scrollFoot table th:nth-child(' + (currentIndex + 1) + ')');
+                    let $sfTh = element.closest('.dataTables_scroll').find('.dataTables_scrollFoot table th:nth-child(' + (currentIndex) + ')');
                     $sfTh.attr('style', currentStyles);
                 });
             }
         },
         _fnApplyWidthColumn: function (column, width) {
-            $(column.nTh).outerWidth(width + 'px');
+            $(column.colEl).outerWidth(width + 'px');
             column.sWidth = width + 'px';
         },
         _fnGetCurrentWidth: function ($node) {
+            if ($node == null) { return 0 }
             let possibleWidths = $node.attr('style').split(';').map(function (cssPart) {
                 return cssPart.trim();
             })
@@ -439,7 +448,7 @@
             return parseInt(widthStr.match(/(\d+)px/ig));
         },
         _fnBoundCheck: function (changedWidth, element) {
-            let thWishWidth = (typeof this.s.state.originalWidth[element.index()] != 'undefined' ? this.s.state.originalWidth[element.index()] : this._fnGetCurrentWidth(element)) + changedWidth;
+            let thWishWidth = (element && typeof this.s.state.originalWidth[element.attr("data-dt-column")] != 'undefined' ? this.s.state.originalWidth[element.attr("data-dt-column")] : this._fnGetCurrentWidth(element)) + changedWidth;
 
             //min bound
             if (this.s.state.minWidth !== -1 && thWishWidth < this.s.state.minWidth) {
@@ -496,7 +505,7 @@
             if (indexOfColumn === visibleColumns.length - 1) {
                 return true;
             }
-            for (let counter = indexOfColumn + 1; counter < visibleColumns.length; counter++) {
+            for (let counter = indexOfColumn; counter < visibleColumns.length - 1; counter++) {
                 let column = visibleColumns[counter];
                 if (this._fnIsColumnResizable(column)) {
                     return false;
@@ -572,10 +581,8 @@
 
 
     // Register a new feature with DataTables
-    if (typeof $.fn.dataTable == "function" &&
-        typeof $.fn.dataTableExt.fnVersionCheck == "function" &&
-        $.fn.dataTableExt.fnVersionCheck('1.10.8')) {
-        $.fn.dataTableExt.aoFeatures.push({
+    if (typeof $.fn.dataTable == "function") {
+        $.fn.dataTable.ext.aoFeatures.push({
             "fnInit": function (settings) {
                 let table = settings.oInstance;
 
