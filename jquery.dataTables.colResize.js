@@ -307,6 +307,7 @@
             let columns = []
             let table = $(this.s.dt.nTable)
             this.s.dt.aoColumns.forEach(function (column) {
+                // column.nTh = column.colEl; //$('th:nth-child(' + column.colEl.attr("data-dt-column") + ')', table)
                 column.nTh = $('th:nth-child(' + (parseInt(column.colEl.attr("data-dt-column")) + 1) + ')', table)
                 columns.push(column)
             })
