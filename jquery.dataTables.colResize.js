@@ -1,9 +1,10 @@
 /**
  * @summary     ColResize
  * @description Provide the ability to resize columns in a DataTable
- * @version     1.6.1
+ * @version     1.0.0
  * @file        jquery.dataTables.colResize.js
- * @author      Daniel Hobi, Lado Tadic, Daniel Petras
+ * @original_author      Daniel Hobi, Lado Tadic, Daniel Petras
+ * @author      Rohit Rehan
  * Language:    Javascript
  * License:     MIT
  */

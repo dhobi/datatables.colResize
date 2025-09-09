@@ -1,6 +1,6 @@
 {
   "name": "datatables.net-colresize-unofficial",
-  "version": "1.7.2",
+  "version": "1.0.0",
   "description": "Plugin to resize columns by mouse drag or touch.",
   "main": "./jquery.dataTables.colResize.js",
   "types": "./types.d.ts",
@@ -9,9 +9,13 @@
     "jquery.dataTables.colResize.css",
     "types.d.ts"
   ],
-  "repository": {
+  "original_repository": {
     "type": "git",
 	  "url": "git+https://github.com/dhobi/datatables.colResize.git"
+  },
+  "repository": {
+    "type": "git",
+	  "url": "git+https://github.com/rohitrehan/datatables.colResize.git"
   },
   "keywords": [],
   "dependencies": {
@@ -23,10 +27,12 @@
     "amd",
     "node"
   ],
-  "author": "Daniel Hobi",
+  "original_author": "Daniel Hobi",
+  "author": "Rohit Rehan",
   "license": "MIT",
   "bugs": {
-	  "url": "https://github.com/dhobi/datatables.colResize/issues"
+	  "url": "https://github.com/rohitrehan/datatables.colResize/issues"
   },
-  "homepage": "https://github.com/dhobi/datatables.colResize#readme"
+  "original_homepage": "https://github.com/dhobi/datatables.colResize#readme",
+  "homepage": "https://github.com/rohitrehan/datatables.colResize#readme"
 }
