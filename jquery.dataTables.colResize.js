@@ -125,7 +125,7 @@
                     oldWidth = widthResult != null ? parseInt(widthResult[0]) : 0,
                     newWidthResult = column._sResizableWidth.match(/(\d+)/i),
                     newWidth = newWidthResult != null ? parseInt(newWidthResult[0]) : 0,
-                    $node = $(column.nTh);
+                    $node = self._fnGetColumnHeader$(column);
 
                 self.s.state.originalWidth[$node.index()] = oldWidth;
                 column.width = column._sResizableWidth;
@@ -156,7 +156,7 @@
                 let widthResult = column.sWidth.match(/(\d+)/i),
                     oldWidth = widthResult != null ? parseInt(widthResult[0]) : 0,
                     newWidth = sizeMap[column.idx],
-                    $node = $(column.nTh);
+                    $node = self._fnGetColumnHeader$(column);
 
                 self.s.state.originalWidth[$node.index()] = oldWidth;
                 column.width = newWidth + 'px';
@@ -167,8 +167,9 @@
         },
         fnSaveState: function () {
             let sizeMap = [];
+            let self = this;
             this._fnGetAllColumns().forEach(function (column) {
-                let oldWidth = column.nTh.offsetWidth;
+                let oldWidth = self._fnGetColumnHeader(column).offsetWidth;
                 sizeMap[column.idx] = oldWidth;
             });
             this.s.opts.stateSaveCallback(this.s.opts, sizeMap);
@@ -180,8 +181,9 @@
             }
 
             $(document).off('.ColResize');
+            let self = this;
             this._fnGetAllColumns().forEach(function (column) {
-                let $columnNode = $(column.nTh);
+                let $columnNode = self._fnGetColumnHeader$(column);
                 $columnNode.off('.ColResize');
                 $columnNode.removeAttr('data-is-resizable');
             });
@@ -199,7 +201,8 @@
             // register document events
             $(document).on('mousemove.ColResize touchmove.ColResize', function (e) {
                 if (self.s.state.isDragging) {
-                    let changedWidth = self._fnGetXCoords(e) - self.s.state.startX;
+                    let changedWidth = (self._fnGetXCoords(e) - self.s.state.startX)
+                            * (self._isRtl() ? -1: 1);
                     self._fnApplyWidth(changedWidth, self.s.state.$element, self.s.state.column);
 
                     self.s.opts.onResize(self._fnMapColumn(self.s.state.column));
@@ -239,7 +242,7 @@
                     }
                 }
                 self._fnGetAllColumns().forEach(function (column) {
-                    $(column.nTh).removeClass(self.s.opts.hoverClass);
+                    self._fnGetColumnHeader$(column).removeClass(self.s.opts.hoverClass);
                 });
                 self.s.state.isDragging = false;
             });
@@ -247,7 +250,7 @@
             //register column events
 
             this._fnGetAllColumns().forEach(function (column) {
-                let $columnNode = $(column.nTh);
+                let $columnNode = self._fnGetColumnHeader$(column);
                 let isResizable = self._fnIsColumnResizable(column);
                 $columnNode.attr('data-is-resizable', isResizable.toString());
                 //save the original value (server) somewhere, we want the size of all of them.
@@ -276,7 +279,7 @@
                             self._fnGetAllColumns().forEach(function (column) {
                                 column._bSortableTempHolder = column.bSortable;
                                 column.bSortable = false;
-                                self._fnRemovePercentWidths(column, $(column.nTh));
+                                self._fnRemovePercentWidths(column, self._fnGetColumnHeader$(column));
                             });
 
                             self.s.state.isDragging = true;
@@ -305,6 +308,12 @@
         _fnGetAllColumns: function () {
             return this.s.dt.aoColumns;
         },
+        _fnGetColumnHeader: function (column) {
+            return this.s.dt.nTHead.querySelectorAll('th')[column.idx];
+        },
+        _fnGetColumnHeader$: function (column) {
+            return $(this._fnGetColumnHeader(column));
+        },
         _fnGetBodyScroll: function () {
             return $(this.s.dt.nScrollBody);
         },
@@ -324,9 +333,14 @@
             }
         },
         _fnIsInDragArea: function ($th, e) {
-            let rightSide = $th.offset().left + $th.outerWidth();
+            let inlineEndSide = $th.offset().left;
+
+            if (!this._isRtl()) {
+                inlineEndSide += $th.outerWidth();
+            }
+
             let xCoord = this._fnGetXCoords(e);
-            return (rightSide + 10) > xCoord && (rightSide - 10) < xCoord;
+            return (inlineEndSide + 10) > xCoord && (inlineEndSide - 10) < xCoord;
         },
         _fnGetXCoords: function (e) {
             return e.type.indexOf('touch') !== -1 ? e.originalEvent.touches[0].pageX : e.pageX;
@@ -364,7 +378,7 @@
             if (element.closest('.dataTables_scroll').length > 0) {
                 let additionalStylesForHiddenThRows = ';padding-top: 0px;padding-bottom: 0px;border-top-width: 0px;border-bottom-width: 0px;height: 0px;';
                 this._fnGetAllColumns().forEach(function (column) {
-                    let $hbTh = $(column.nTh);
+                    let $hbTh = self._fnGetColumnHeader$(column);
                     let currentIndex = $hbTh.index();
                     let currentStyles = $hbTh.attr('style') + additionalStylesForHiddenThRows;
 
@@ -378,7 +392,7 @@
             }
         },
         _fnApplyWidthColumn: function (column, width) {
-            $(column.nTh).outerWidth(width + 'px');
+            $(this._fnGetColumnHeader(column)).outerWidth(width + 'px');
             column.sWidth = width + 'px';
         },
         _fnGetCurrentWidth: function ($node) {
@@ -489,8 +503,10 @@
             return { idx: column.idx, width: column.sWidth };
         },
         _fnIsLastResizableColumnDragging: function (draggingColumn) {
+            let self = this;
+
             let visibleColumns = this._fnGetAllColumns().filter(function (column) {
-                return $(column.nTh).is(':visible');
+                return self._fnGetColumnHeader$(column).is(':visible');
             });
             let indexOfColumn = visibleColumns.indexOf(draggingColumn);
             if (indexOfColumn === visibleColumns.length - 1) {
@@ -506,6 +522,9 @@
         },
         _fnIsColumnResizable: function (column) {
             return this.s.opts.isResizable(column);
+        },
+        _isRtl: function () {
+            return $(this.s.dt.nTable).css('direction') === 'rtl';
         }
     });
 
@@ -573,8 +592,8 @@
 
     // Register a new feature with DataTables
     if (typeof $.fn.dataTable == "function" &&
-        typeof $.fn.dataTableExt.fnVersionCheck == "function" &&
-        $.fn.dataTableExt.fnVersionCheck('1.10.8')) {
+        typeof $.fn.dataTable.versionCheck == "function" &&
+        $.fn.dataTable.versionCheck('2.0.0')) {
         $.fn.dataTableExt.aoFeatures.push({
             "fnInit": function (settings) {
                 let table = settings.oInstance;
@@ -594,7 +613,7 @@
         });
     }
     else {
-        alert("Warning: ColResize requires DataTables 1.10.8 or greater - www.datatables.net/download");
+        alert("Warning: ColResize requires DataTables 2.0.0 or greater - www.datatables.net/download");
     }
 
 
