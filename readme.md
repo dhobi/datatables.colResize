@@ -1,3 +1,5 @@
+**This branch is compatible with DataTables 2.x only. For the current version use [this branch](https://github.com/dhobi/datatables.colResize/tree/v1).**
+
 # jQuery dataTables ColResize
 
 Plugin to resize columns by mouse drag or touch.
